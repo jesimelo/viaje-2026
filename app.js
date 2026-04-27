@@ -51,12 +51,12 @@ const DAYS_BASE = [
 ];
 
 const BLOCKS = [
-  { id: 'llegada', icon: '✈️', title: 'Llegada', dates: '18-19 may', firstDay: '2026-05-18' },
-  { id: 'chieti', icon: '🏔️', title: 'Chieti', dates: '20 may - 5 jun', firstDay: '2026-05-20' },
-  { id: 'puglia', icon: '🫒', title: 'Puglia', dates: '6-12 jun', firstDay: '2026-06-06' },
-  { id: 'andalucia', icon: '🌹', title: 'Andalucía', dates: '12-19 jun', firstDay: '2026-06-12' },
-  { id: 'milan', icon: '⛪', title: 'Milán', dates: '19-21 jun', firstDay: '2026-06-19' },
-  { id: 'vuelta', icon: '🏠', title: 'Vuelta', dates: '22 jun', firstDay: '2026-06-22' },
+  { id: 'llegada', icon: '✈️', title: 'Llegada', dates: '18-19 may', firstDay: '2026-05-18', weather: '' },
+  { id: 'chieti', icon: '🏔️', title: 'Chieti', dates: '20 may - 5 jun', firstDay: '2026-05-20', weather: '🌤️ 18-25°C · primaveral · lluvias ocasionales' },
+  { id: 'puglia', icon: '🫒', title: 'Puglia', dates: '6-12 jun', firstDay: '2026-06-06', weather: '☀️ 25-30°C · soleado · mar caliente' },
+  { id: 'andalucia', icon: '🌹', title: 'Andalucía', dates: '12-19 jun', firstDay: '2026-06-12', weather: '🔥 28-35°C · calor seco · llevar agua' },
+  { id: 'milan', icon: '⛪', title: 'Milán', dates: '19-21 jun', firstDay: '2026-06-19', weather: '🌤️ 22-28°C · agradable · noches frescas' },
+  { id: 'vuelta', icon: '🏠', title: 'Vuelta', dates: '22 jun', firstDay: '2026-06-22', weather: '' },
 ];
 
 const CHECKLIST_ITEMS = [
@@ -121,12 +121,14 @@ const EXPENSE_CATEGORIES = [
 
 // ============= STATE =============
 let state = {
-  checklist: {},        // { itemId: true } solo marca como hecho
-  expenses: [],         // [{amount, category, description, date, paid: 'yes'|'no'}]
+  checklist: {},
+  expenses: [],
   exchangeRate: 1100,
-  notes: {},            // { date: 'texto' }
-  dayOverrides: {},     // { date: { place, morning, afternoon, evening, sleeping, mapsQuery, ... } }
-  places: {}            // { date: [{name, type, mapsQuery, link}] }
+  notes: {},
+  dayOverrides: {},
+  places: {},
+  dayPhotos: {},
+  customTasks: []  // [{id, text, dateUse, notes, priority, custom: true}]
 };
 
 function loadState() {
@@ -209,109 +211,90 @@ function getAllDays() {
   return DAYS_BASE.map(d => getDay(d.date));
 }
 
-function showToast(msg) {
+function showToast(msg, undoAction) {
   const t = document.getElementById('toast');
-  t.textContent = msg;
+  if (undoAction) {
+    t.innerHTML = msg + ' <span class="toast-action">DESHACER</span>';
+    const action = t.querySelector('.toast-action');
+    action.onclick = () => {
+      undoAction();
+      t.classList.remove('visible');
+    };
+  } else {
+    t.textContent = msg;
+  }
   t.classList.add('visible');
   clearTimeout(window._toastTimer);
-  window._toastTimer = setTimeout(() => t.classList.remove('visible'), 2400);
+  window._toastTimer = setTimeout(() => t.classList.remove('visible'), undoAction ? 5000 : 2400);
 }
 
 // ============= TODAY VIEW =============
 function renderToday() {
   const today = getToday();
-  const tomorrow = tomorrowDate();
   const tripDay = getDay(today);
-  const tripDayTomorrow = getDay(tomorrow);
   const todayCard = document.getElementById('todayCard');
-  const tomorrowCard = document.getElementById('tomorrowCard');
   const cdCard = document.getElementById('countdownCard');
   
   if (tripDay) {
+    // Estamos en viaje: mostrar el día actual
     const summary = [tripDay.morning, tripDay.afternoon, tripDay.evening].filter(Boolean).join(' · ');
     todayCard.innerHTML = `
-      <div class="hero-today">
+      <div class="hero-today" onclick="openDayDetail('${today}')" style="cursor:pointer;">
         <div class="today-eyebrow">Hoy · ${formatDate(today, 'long')}</div>
         <div class="today-title">${tripDay.place}</div>
         <div class="today-subtitle">${summary || 'Sin plan registrado todavía'}</div>
         <div class="today-meta">
           <div class="meta-pill">🛏️ ${tripDay.sleeping}</div>
           ${tripDay.work ? '<div class="meta-pill">💻 trabajo 14-23</div>' : '<div class="meta-pill">🌴 libre</div>'}
-          ${tripDay.mapsQuery ? `<div class="meta-pill clickable" onclick="openMaps('${tripDay.mapsQuery}')">📍 maps</div>` : ''}
+          ${tripDay.mapsQuery ? `<div class="meta-pill clickable" onclick="event.stopPropagation();openMaps('${tripDay.mapsQuery}')">📍 maps</div>` : ''}
         </div>
       </div>
     `;
     cdCard.innerHTML = '';
-    
-    if (tripDayTomorrow) {
-      const tomSummary = [tripDayTomorrow.morning, tripDayTomorrow.afternoon, tripDayTomorrow.evening].filter(Boolean).join(' · ');
-      tomorrowCard.innerHTML = `
-        <div class="tomorrow-preview" onclick="openDayDetail('${tomorrow}')">
-          <div class="tomorrow-eyebrow">Mañana</div>
-          <div class="tomorrow-title">${tripDayTomorrow.place}</div>
-          <div class="tomorrow-summary">${tomSummary.length > 90 ? tomSummary.substring(0,90)+'…' : tomSummary}</div>
-          <div class="tomorrow-arrow">→</div>
-        </div>
-      `;
-    } else {
-      tomorrowCard.innerHTML = '';
-    }
   } else {
     const days = daysBetween(today, TRIP.startDate);
-    const totalDays = daysBetween('2026-01-01', TRIP.startDate);
-    const elapsed = daysBetween('2026-01-01', today);
-    const progress = Math.max(0, Math.min(100, (elapsed/totalDays)*100));
     
     if (days > 0) {
-      todayCard.innerHTML = '';
-      tomorrowCard.innerHTML = '';
+      // Antes del viaje: countdown grande + fecha de hoy
+      todayCard.innerHTML = `
+        <div class="hero-today" style="text-align:center;padding:20px 24px;">
+          <div class="today-eyebrow">Hoy</div>
+          <div class="today-title" style="font-size:24px;">${formatDate(today, 'long')}</div>
+        </div>
+      `;
+      const totalDays = daysBetween('2026-01-01', TRIP.startDate);
+      const elapsed = daysBetween('2026-01-01', today);
+      const progress = Math.max(0, Math.min(100, (elapsed/totalDays)*100));
       cdCard.innerHTML = `
         <div class="countdown-wrap">
           <div class="countdown-label">Faltan</div>
           <div class="countdown-number">${days}</div>
-          <div class="countdown-suffix">días para Italia</div>
+          <div class="countdown-suffix">días para Italia ✈</div>
           <div class="countdown-progress"><div class="countdown-progress-fill" style="width:${progress}%"></div></div>
         </div>
       `;
     } else if (today > TRIP.endDate) {
       cdCard.innerHTML = '';
-      tomorrowCard.innerHTML = '';
       todayCard.innerHTML = `<div class="hero-today"><div class="today-eyebrow">Viaje terminado</div><div class="today-title">¡Bienvenida a casa!</div><div class="today-subtitle">Esperamos que la hayas pasado increíble.</div></div>`;
     } else {
       cdCard.innerHTML = '';
-      tomorrowCard.innerHTML = '';
       todayCard.innerHTML = '<div class="hero-today"><div class="today-eyebrow">Hoy</div><div class="today-title">Día sin plan</div></div>';
     }
   }
   
   renderBlockGrid();
-  if (!FOLLOWING_MODE) renderUrgentItems();
 }
 
 function renderBlockGrid() {
   document.getElementById('blockGrid').innerHTML = BLOCKS.map(b => `
     <div class="block-card" onclick="goToBlock('${b.firstDay}')">
       <div class="block-card-icon">${b.icon}</div>
-      <div class="block-card-title">${b.title}</div>
-      <div class="block-card-dates">${b.dates}</div>
-    </div>
-  `).join('');
-}
-
-function renderUrgentItems() {
-  const urgent = CHECKLIST_ITEMS.filter(i => i.priority === 1 && !state.checklist[i.id]);
-  const cont = document.getElementById('urgentItems');
-  if (urgent.length === 0) {
-    cont.innerHTML = '<div style="padding:16px;background:linear-gradient(135deg,var(--grape),var(--space));color:var(--parchment);border-radius:14px;text-align:center;font-weight:500;font-size:13px;">✨ Todo lo urgente está hecho</div>';
-    return;
-  }
-  cont.innerHTML = urgent.map(i => `
-    <div class="checklist-item" onclick="switchTab('checklist')">
-      <div class="checkbox"></div>
-      <div class="item-content">
-        <div class="item-name">${i.text}</div>
-        <div class="item-meta">${i.dateUse}</div>
+      <div class="block-card-content">
+        <div class="block-card-title">${b.title}</div>
+        <div class="block-card-dates">${b.dates}</div>
+        ${b.weather ? `<div class="block-card-weather">${b.weather}</div>` : ''}
       </div>
+      <div class="block-card-arrow">→</div>
     </div>
   `).join('');
 }
@@ -377,115 +360,139 @@ function openDayDetail(date) {
   
   document.getElementById('ddDate').textContent = formatDate(date, 'long');
   document.getElementById('ddTitle').textContent = d.place;
-  document.getElementById('ddPlace').textContent = CITY_ICONS[d.city] + ' ' + CITY_NAMES[d.city];
+  
+  // Header con chips: ciudad + alojamiento + trabajo
+  let headerHtml = `<div style="font-size:13px;font-weight:400;opacity:0.85;">${CITY_ICONS[d.city]} ${CITY_NAMES[d.city]}</div>`;
+  headerHtml += '<div class="day-header-chips">';
+  if (d.sleeping) {
+    const mapsUrl = d.mapsQuery ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(d.sleeping + ' ' + d.mapsQuery)}` : null;
+    if (mapsUrl) {
+      headerHtml += `<a href="${mapsUrl}" target="_blank" class="day-header-chip">🛏️ ${d.sleeping} →</a>`;
+    } else {
+      headerHtml += `<span class="day-header-chip">🛏️ ${d.sleeping}</span>`;
+    }
+  }
+  if (d.work) headerHtml += `<span class="day-header-chip work">💻 trabajo 14-23</span>`;
+  if (d.mapsQuery && !d.sleeping) headerHtml += `<a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(d.mapsQuery)}" target="_blank" class="day-header-chip">📍 Maps →</a>`;
+  headerHtml += '</div>';
+  document.getElementById('ddPlace').innerHTML = headerHtml;
   
   const expenses = state.expenses.filter(e => e.date === date);
   const totalExp = expenses.reduce((s, e) => s + (parseFloat(e.amount) || 0), 0);
   const note = state.notes[date] || '';
   const places = state.places[date] || [];
+  const photo = state.dayPhotos[date];
   
   let html = '';
   
-  // MOMENTOS DEL DÍA (mañana / tarde / noche)
+  // FOTO DEL DÍA (si existe, arriba)
+  if (photo) {
+    html += `
+      <div class="day-photo-section">
+        <img src="${photo}" class="day-photo" onclick="openPhotoModal('${date}')" alt="Foto del día">
+        ${!FOLLOWING_MODE ? `
+        <div class="day-photo-overlay">
+          <div class="day-photo-btn" onclick="changeDayPhoto('${date}')" title="Cambiar">📷</div>
+          <div class="day-photo-btn" onclick="removeDayPhoto('${date}')" title="Borrar">🗑</div>
+        </div>` : ''}
+      </div>
+    `;
+  } else if (!FOLLOWING_MODE) {
+    html += `
+      <button class="add-photo-btn" onclick="changeDayPhoto('${date}')">
+        📷 <span>Agregar foto del día</span>
+      </button>
+    `;
+  }
+  
+  // EL DÍA - mañana / tarde / noche con tap directo para editar
   html += `
     <div class="day-section-card">
       <div class="day-section-label">
         <span>El día</span>
-        ${!FOLLOWING_MODE ? `<span class="day-section-label-edit" onclick="editDayMoments('${date}')">✏️ Editar</span>` : ''}
+        ${!FOLLOWING_MODE ? `<span class="day-section-label-edit" onclick="editAllDay('${date}')">✏️ Editar todo</span>` : ''}
       </div>
       <div class="moments">
-        <div class="moment-block">
+        <div class="moment-block" ${!FOLLOWING_MODE ? `onclick="editSingleMoment('${date}','morning')"` : ''}>
           <div class="moment-icon-wrap">🌅</div>
           <div class="moment-content">
             <div class="moment-label">Mañana</div>
-            <div class="moment-text ${!d.morning ? 'empty' : ''}">${d.morning || 'Sin plan'}</div>
+            <div class="moment-text ${!d.morning ? 'empty' : ''}">${d.morning || (FOLLOWING_MODE ? '—' : 'Tocá para agregar')}</div>
           </div>
         </div>
-        <div class="moment-block">
+        <div class="moment-block" ${!FOLLOWING_MODE ? `onclick="editSingleMoment('${date}','afternoon')"` : ''}>
           <div class="moment-icon-wrap">☀️</div>
           <div class="moment-content">
             <div class="moment-label">Tarde</div>
-            <div class="moment-text ${!d.afternoon ? 'empty' : ''}">${d.afternoon || 'Sin plan'}</div>
+            <div class="moment-text ${!d.afternoon ? 'empty' : ''}">${d.afternoon || (FOLLOWING_MODE ? '—' : 'Tocá para agregar')}</div>
           </div>
         </div>
-        <div class="moment-block">
+        <div class="moment-block" ${!FOLLOWING_MODE ? `onclick="editSingleMoment('${date}','evening')"` : ''}>
           <div class="moment-icon-wrap">🌙</div>
           <div class="moment-content">
             <div class="moment-label">Noche</div>
-            <div class="moment-text ${!d.evening ? 'empty' : ''}">${d.evening || 'Sin plan'}</div>
+            <div class="moment-text ${!d.evening ? 'empty' : ''}">${d.evening || (FOLLOWING_MODE ? '—' : 'Tocá para agregar')}</div>
           </div>
         </div>
       </div>
     </div>
   `;
   
-  // ALOJAMIENTO
-  html += `
-    <div class="day-section-card">
-      <div class="day-section-label">
-        <span>Alojamiento</span>
-        ${!FOLLOWING_MODE ? `<span class="day-section-label-edit" onclick="editDayLodging('${date}')">✏️</span>` : ''}
+  // NOTAS - arriba, después de "El día"
+  if (!FOLLOWING_MODE) {
+    html += `
+      <div class="notes-section">
+        <div class="day-section-card">
+          <div class="day-section-label"><span>Notas</span></div>
+          <textarea class="notes-textarea-compact" id="dayNote" placeholder="Algo que quieras recordar..." onblur="autoSaveNote('${date}')">${note}</textarea>
+        </div>
       </div>
-      <div class="day-section-text">🛏️ ${d.sleeping}</div>
-      ${d.mapsQuery ? `<a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(d.sleeping + ' ' + d.mapsQuery)}" target="_blank" class="add-place-btn" style="margin-top:10px;">📍 Buscar en Maps</a>` : ''}
-    </div>
-  `;
-  
-  if (d.work) {
-    html += '<div class="day-section-card" style="background:linear-gradient(135deg,var(--almond),var(--parchment-dark));"><div class="day-section-label">Trabajo</div><div class="day-section-text">14-23 hs italianas (9-18 hs Argentina). Mañana libre 8-13.</div></div>';
+    `;
+  } else if (note) {
+    html += `
+      <div class="day-section-card">
+        <div class="day-section-label"><span>Notas</span></div>
+        <div class="day-section-text">${note}</div>
+      </div>
+    `;
   }
   
-  // LUGARES
-  if (!FOLLOWING_MODE || places.length > 0) {
+  // LUGARES - solo si hay alguno o si no estás en modo siguiendo
+  if (places.length > 0) {
     html += '<div class="day-section-card"><div class="day-section-label"><span>Lugares</span>';
     if (!FOLLOWING_MODE) html += `<span class="day-section-label-edit" onclick="addPlace('${date}')">+ Agregar</span>`;
-    html += '</div>';
-    
-    if (places.length === 0) {
-      html += '<div style="font-size:12px;color:var(--lilac);font-style:italic;">Sin lugares guardados todavía</div>';
-    } else {
-      html += '<div class="places-list">';
-      places.forEach((p, idx) => {
-        const typeData = PLACE_TYPES.find(t => t.id === p.type) || PLACE_TYPES[5];
-        const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent((p.mapsQuery || p.name) + ' ' + (d.mapsQuery || ''))}`;
-        html += `
-          <div class="place-card">
-            <div class="place-icon">${typeData.icon}</div>
-            <div class="place-info">
-              <div class="place-name">${p.name}</div>
-              <div class="place-type">${typeData.label}</div>
-            </div>
-            <div class="place-actions">
-              <a href="${mapsUrl}" target="_blank" class="place-btn" title="Maps">📍</a>
-              ${p.link ? `<a href="${p.link}" target="_blank" class="place-btn" title="Link">🔗</a>` : ''}
-              ${!FOLLOWING_MODE ? `<button class="place-btn" onclick="deletePlace('${date}',${idx})" title="Borrar">🗑</button>` : ''}
-            </div>
+    html += '</div><div class="places-list">';
+    places.forEach((p, idx) => {
+      const typeData = PLACE_TYPES.find(t => t.id === p.type) || PLACE_TYPES[5];
+      const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent((p.mapsQuery || p.name) + ' ' + (d.mapsQuery || ''))}`;
+      html += `
+        <div class="place-card">
+          <div class="place-icon">${typeData.icon}</div>
+          <div class="place-info">
+            <div class="place-name">${p.name}</div>
+            <div class="place-type">${typeData.label}</div>
           </div>
-        `;
-      });
-      html += '</div>';
-    }
-    html += '</div>';
+          <div class="place-actions">
+            <a href="${mapsUrl}" target="_blank" class="place-btn" title="Maps">📍</a>
+            ${p.link ? `<a href="${p.link}" target="_blank" class="place-btn" title="Link">🔗</a>` : ''}
+            ${!FOLLOWING_MODE ? `<button class="place-btn" onclick="deletePlace('${date}',${idx})" title="Borrar">🗑</button>` : ''}
+          </div>
+        </div>
+      `;
+    });
+    html += '</div></div>';
+  } else if (!FOLLOWING_MODE) {
+    // Sin sección, solo botón discreto
+    html += `<button class="add-place-btn" onclick="addPlace('${date}')" style="width:100%;justify-content:center;margin-bottom:12px;">📍 Agregar un lugar (hotel, resto, atracción)</button>`;
   }
   
   // GASTOS DEL DÍA
   if (!FOLLOWING_MODE && expenses.length > 0) {
-    html += '<div class="day-section-card"><div class="day-section-label">Gastos del día</div>';
+    html += '<div class="day-section-card"><div class="day-section-label"><span>Gastos del día</span></div>';
     expenses.forEach(e => {
       html += `<div style="display:flex;justify-content:space-between;font-size:13px;padding:5px 0;"><span>${e.description || EXPENSE_CATEGORIES.find(c=>c.id===e.category)?.name}</span><span style="font-weight:600;">${parseFloat(e.amount).toFixed(2)} EU</span></div>`;
     });
     html += `<div style="display:flex;justify-content:space-between;border-top:1px solid var(--parchment-dark);margin-top:8px;padding-top:10px;font-weight:600;font-size:14px;"><span>Total</span><span>${totalExp.toFixed(2)} EU</span></div></div>`;
-  }
-  
-  // NOTAS
-  if (!FOLLOWING_MODE) {
-    html += `
-      <div class="day-section-card">
-        <div class="day-section-label">Notas</div>
-        <textarea class="notes-textarea" id="dayNote" placeholder="Algo que quieras recordar...">${note}</textarea>
-        <button class="btn btn-primary" style="margin-top:10px;width:auto;padding:10px 22px;flex:none;" onclick="saveNote('${date}')">Guardar</button>
-      </div>
-    `;
   }
   
   // NAVEGACIÓN ANTERIOR/SIGUIENTE
@@ -506,46 +513,29 @@ function openDayDetail(date) {
   document.getElementById('dayDetail').scrollTo(0, 0);
 }
 
-function saveNote(date) {
-  state.notes[date] = document.getElementById('dayNote').value;
-  saveState();
-  showToast('Nota guardada');
+// Auto-save de notas al perder foco (sin botón)
+function autoSaveNote(date) {
+  const val = document.getElementById('dayNote').value;
+  if (state.notes[date] !== val) {
+    state.notes[date] = val;
+    saveState();
+    showToast('Nota guardada');
+  }
 }
 
-function closeDayDetail() {
-  document.getElementById('dayDetail').classList.remove('active');
-  _currentDayDetail = null;
-}
-
-// EDITAR DÍA: header (place, sleeping, mapsQuery)
-function editDayHeader() {
-  if (!_currentDayDetail) return;
-  const d = getDay(_currentDayDetail);
-  showEditModal({
-    title: 'Editar encabezado',
-    subtitle: formatDate(_currentDayDetail, 'long'),
-    fields: [
-      { label: 'Lugar / título del día', name: 'place', type: 'text', value: d.place },
-      { label: 'Ciudad principal (para Maps)', name: 'mapsQuery', type: 'text', value: d.mapsQuery || '' },
-    ],
-    onSave: (vals) => {
-      state.dayOverrides[_currentDayDetail] = { ...state.dayOverrides[_currentDayDetail], ...vals };
-      saveState();
-      openDayDetail(_currentDayDetail);
-      showToast('Actualizado');
-    }
-  });
-}
-
-function editDayMoments(date) {
+// EDITAR TODO EL DÍA en un solo modal
+function editAllDay(date) {
   const d = getDay(date);
   showEditModal({
-    title: 'Editar el día',
+    title: 'Editar día',
     subtitle: formatDate(date, 'long'),
     fields: [
+      { label: 'Título del día', name: 'place', type: 'text', value: d.place },
       { label: '🌅 Mañana', name: 'morning', type: 'textarea', value: d.morning || '' },
       { label: '☀️ Tarde', name: 'afternoon', type: 'textarea', value: d.afternoon || '' },
       { label: '🌙 Noche', name: 'evening', type: 'textarea', value: d.evening || '' },
+      { label: 'Dónde duermo', name: 'sleeping', type: 'text', value: d.sleeping },
+      { label: 'Ciudad para Maps (referencia)', name: 'mapsQuery', type: 'text', value: d.mapsQuery || '' },
     ],
     onSave: (vals) => {
       state.dayOverrides[date] = { ...state.dayOverrides[date], ...vals };
@@ -556,22 +546,91 @@ function editDayMoments(date) {
   });
 }
 
-function editDayLodging(date) {
+// Editar UN solo momento (mañana/tarde/noche)
+function editSingleMoment(date, moment) {
   const d = getDay(date);
+  const labels = { morning: '🌅 Mañana', afternoon: '☀️ Tarde', evening: '🌙 Noche' };
   showEditModal({
-    title: 'Alojamiento',
+    title: labels[moment],
     subtitle: formatDate(date, 'long'),
     fields: [
-      { label: 'Dónde dormís', name: 'sleeping', type: 'text', value: d.sleeping },
-      { label: 'Ciudad (para buscar en Maps)', name: 'mapsQuery', type: 'text', value: d.mapsQuery || '' },
+      { label: 'Qué hacés', name: moment, type: 'textarea', value: d[moment] || '', autofocus: true },
     ],
     onSave: (vals) => {
       state.dayOverrides[date] = { ...state.dayOverrides[date], ...vals };
       saveState();
       openDayDetail(date);
-      showToast('Alojamiento actualizado');
+      showToast('Guardado');
     }
   });
+}
+
+// FOTO DEL DÍA
+function changeDayPhoto(date) {
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = 'image/*';
+  input.capture = 'environment';
+  input.onchange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        const maxSize = 1200;
+        let w = img.width, h = img.height;
+        if (w > h && w > maxSize) { h = h * maxSize / w; w = maxSize; }
+        else if (h > maxSize) { w = w * maxSize / h; h = maxSize; }
+        canvas.width = w;
+        canvas.height = h;
+        canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+        const dataUrl = canvas.toDataURL('image/jpeg', 0.8);
+        state.dayPhotos[date] = dataUrl;
+        saveState();
+        openDayDetail(date);
+        showToast('Foto guardada');
+      };
+      img.src = ev.target.result;
+    };
+    reader.readAsDataURL(file);
+  };
+  input.click();
+}
+
+function removeDayPhoto(date) {
+  const oldPhoto = state.dayPhotos[date];
+  delete state.dayPhotos[date];
+  saveState();
+  openDayDetail(date);
+  showToast('Foto eliminada', () => {
+    state.dayPhotos[date] = oldPhoto;
+    saveState();
+    openDayDetail(date);
+  });
+}
+
+function openPhotoModal(date) {
+  const photo = state.dayPhotos[date];
+  if (!photo) return;
+  document.getElementById('photoModalImg').src = photo;
+  document.getElementById('photoModal').classList.add('active');
+}
+
+function closePhotoModal() {
+  document.getElementById('photoModal').classList.remove('active');
+}
+
+function closeDayDetail() {
+  document.getElementById('dayDetail').classList.remove('active');
+  _currentDayDetail = null;
+}
+
+// EDITAR DÍA: el botón ✏️ del header abre el editor completo
+function editDayHeader() {
+  if (!_currentDayDetail) return;
+  editAllDay(_currentDayDetail);
 }
 
 function addPlace(date) {
@@ -596,20 +655,32 @@ function addPlace(date) {
 }
 
 function deletePlace(date, idx) {
-  if (!confirm('¿Borrar este lugar?')) return;
+  const oldPlace = state.places[date][idx];
   state.places[date].splice(idx, 1);
   if (state.places[date].length === 0) delete state.places[date];
   saveState();
   openDayDetail(date);
+  showToast('Lugar borrado', () => {
+    if (!state.places[date]) state.places[date] = [];
+    state.places[date].splice(idx, 0, oldPlace);
+    saveState();
+    openDayDetail(date);
+  });
 }
 
 // ============= CHECKLIST =============
+function getAllTasks() {
+  // Combina tareas predefinidas + custom
+  return [...CHECKLIST_ITEMS, ...state.customTasks];
+}
+
 function renderChecklist() {
   const cont = document.getElementById('checklistContainer');
+  const all = getAllTasks();
   let html = '';
   
   for (let p = 1; p <= 5; p++) {
-    const items = CHECKLIST_ITEMS.filter(i => i.priority === p);
+    const items = all.filter(i => i.priority === p);
     if (items.length === 0) continue;
     const done = items.filter(i => state.checklist[i.id]).length;
     const meta = PRIORITY_LABELS[p];
@@ -624,15 +695,21 @@ function renderChecklist() {
           <div class="checklist-item ${state.checklist[i.id] ? 'done' : ''}">
             <div class="checkbox ${state.checklist[i.id] ? 'checked' : ''}" onclick="toggleChecklist('${i.id}')"></div>
             <div class="item-content" onclick="toggleChecklist('${i.id}')">
-              <div class="item-name">${i.text}</div>
-              <div class="item-meta">${i.dateUse}</div>
+              <div class="item-name">${i.text}${i.custom ? ' <span style="font-size:10px;color:var(--lilac);">· mía</span>' : ''}</div>
+              <div class="item-meta">${i.dateUse || ''}</div>
               ${i.notes ? `<div class="item-meta" style="font-style:italic;margin-top:3px">${i.notes}</div>` : ''}
             </div>
+            ${i.custom ? `<button class="item-edit" onclick="editCustomTask('${i.id}')">✏️</button>` : ''}
           </div>
         `).join('')}
       </div>
     `;
   }
+  
+  if (all.length === 0) {
+    html = '<div class="empty-state"><div class="empty-state-icon">✓</div><div class="empty-state-text">Sin tareas todavía. Tocá <strong>+ Nueva tarea</strong> arriba.</div></div>';
+  }
+  
   cont.innerHTML = html;
 }
 
@@ -644,7 +721,80 @@ function toggleChecklist(id) {
   }
   saveState();
   renderChecklist();
-  renderToday();
+}
+
+function addCustomTask() {
+  showEditModal({
+    title: 'Nueva tarea',
+    subtitle: 'Algo que tenés que hacer o reservar',
+    fields: [
+      { label: 'Tarea', name: 'text', type: 'text', value: '', autofocus: true },
+      { label: 'Cuándo (referencia)', name: 'dateUse', type: 'text', value: '' },
+      { label: 'Prioridad', name: 'priority', type: 'select', options: [
+        { value: '1', label: '🔥 Nivel 1 - Comprar ya' },
+        { value: '2', label: '📅 Nivel 2 - 2-3 semanas' },
+        { value: '3', label: '📌 Nivel 3 - En mayo' },
+        { value: '4', label: '✈️ Nivel 4 - Allá' },
+        { value: '5', label: '💳 Otros' },
+      ], value: '4' },
+      { label: 'Notas (opcional)', name: 'notes', type: 'textarea', value: '' },
+    ],
+    onSave: (vals) => {
+      if (!vals.text) return;
+      const id = 'custom_' + Date.now();
+      state.customTasks.push({
+        id,
+        text: vals.text,
+        dateUse: vals.dateUse,
+        notes: vals.notes,
+        priority: parseInt(vals.priority),
+        custom: true
+      });
+      saveState();
+      renderChecklist();
+      showToast('Tarea agregada');
+    }
+  });
+}
+
+function editCustomTask(id) {
+  const idx = state.customTasks.findIndex(t => t.id === id);
+  if (idx < 0) return;
+  const t = state.customTasks[idx];
+  showEditModal({
+    title: 'Editar tarea',
+    subtitle: 'Tarea propia',
+    fields: [
+      { label: 'Tarea', name: 'text', type: 'text', value: t.text },
+      { label: 'Cuándo', name: 'dateUse', type: 'text', value: t.dateUse || '' },
+      { label: 'Prioridad', name: 'priority', type: 'select', options: [
+        { value: '1', label: '🔥 Nivel 1 - Comprar ya' },
+        { value: '2', label: '📅 Nivel 2 - 2-3 semanas' },
+        { value: '3', label: '📌 Nivel 3 - En mayo' },
+        { value: '4', label: '✈️ Nivel 4 - Allá' },
+        { value: '5', label: '💳 Otros' },
+      ], value: String(t.priority) },
+      { label: 'Notas', name: 'notes', type: 'textarea', value: t.notes || '' },
+    ],
+    onSave: (vals) => {
+      state.customTasks[idx] = { ...t, ...vals, priority: parseInt(vals.priority) };
+      saveState();
+      renderChecklist();
+      showToast('Actualizada');
+    },
+    onDelete: () => {
+      const oldTask = state.customTasks[idx];
+      state.customTasks.splice(idx, 1);
+      delete state.checklist[id];
+      saveState();
+      renderChecklist();
+      showToast('Tarea borrada', () => {
+        state.customTasks.splice(idx, 0, oldTask);
+        saveState();
+        renderChecklist();
+      });
+    }
+  });
 }
 
 // ============= BUDGET / EXPENSES =============
@@ -753,12 +903,15 @@ function editExpense(idx) {
       showToast('Actualizado');
     },
     onDelete: () => {
-      if (confirm('¿Borrar este gasto?')) {
-        state.expenses.splice(idx, 1);
+      const oldExp = state.expenses[idx];
+      state.expenses.splice(idx, 1);
+      saveState();
+      renderBudget();
+      showToast('Gasto borrado', () => {
+        state.expenses.splice(idx, 0, oldExp);
         saveState();
         renderBudget();
-        showToast('Eliminado');
-      }
+      });
     }
   });
 }
