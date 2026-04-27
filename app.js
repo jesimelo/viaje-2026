@@ -235,6 +235,12 @@ function renderToday() {
   const todayCard = document.getElementById('todayCard');
   const cdCard = document.getElementById('countdownCard');
   
+  // Defensive check
+  if (!todayCard || !cdCard) {
+    console.warn('Missing DOM elements for renderToday');
+    return;
+  }
+  
   if (tripDay) {
     // Estamos en viaje: mostrar el día actual
     const summary = [tripDay.morning, tripDay.afternoon, tripDay.evening].filter(Boolean).join(' · ');
