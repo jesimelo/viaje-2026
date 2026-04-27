@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -30,14 +30,13 @@
   --radius-lg: 20px;
   --t-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
   --t-base: 280ms cubic-bezier(0.4, 0, 0.2, 1);
-  --t-slow: 480ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 html { scroll-behavior: smooth; }
 
 body {
-  font-family: 'Poppins', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  font-family: 'Poppins', system-ui, -apple-system, sans-serif;
   font-size: 15px;
   line-height: 1.55;
   color: var(--space);
@@ -48,23 +47,22 @@ body {
   background-attachment: fixed;
   min-height: 100vh;
   padding-bottom: 100px;
-  font-weight: 400;
-  font-feature-settings: "tnum" 1, "lnum" 1;
   -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  font-feature-settings: "tnum" 1;
 }
 
-/* tabular numbers */
-.num, .price, .date-num, .count, .countdown-number, .day-num,
-.budget-row, .item-meta, .converter-input, .converter-currency,
+.num, .price, .countdown-number, .day-num, .budget-row, .item-meta, .converter-input,
 .expense-amount, .reservation-detail, .checklist-counter, .item-actual {
   font-variant-numeric: tabular-nums;
-  font-feature-settings: "tnum" 1, "lnum" 1;
 }
 
 h1, h2, h3 { font-weight: 600; letter-spacing: -0.02em; line-height: 1.15; }
 button { font-family: inherit; cursor: pointer; border: none; background: none; color: inherit; }
 input, textarea, select { font-family: inherit; }
+
+/* IMPORTANT: 16px en inputs evita zoom en iOS */
+input[type="text"], input[type="number"], input[type="date"], input[type="email"], input[type="url"],
+textarea, select { font-size: 16px !important; }
 
 /* HEADER */
 .header {
@@ -79,32 +77,22 @@ input, textarea, select { font-family: inherit; }
 }
 .header-content { display: flex; justify-content: space-between; align-items: center; gap: 12px; max-width: 600px; margin: 0 auto; }
 .header-left { flex: 1; min-width: 0; }
-.header-title { font-size: 18px; font-weight: 600; letter-spacing: -0.02em; line-height: 1.2; }
-.header-subtitle {
-  font-size: 11px;
-  opacity: 0.65;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  margin-top: 2px;
-  font-weight: 500;
-}
+.header-title { font-size: 18px; font-weight: 600; letter-spacing: -0.02em; }
+.header-subtitle { font-size: 11px; opacity: 0.65; letter-spacing: 0.08em; text-transform: uppercase; margin-top: 2px; font-weight: 500; }
 .header-actions { display: flex; gap: 8px; }
 .header-btn {
   background: rgba(242, 233, 228, 0.1);
   border: 1px solid rgba(242, 233, 228, 0.18);
   color: var(--parchment);
   border-radius: 50%;
-  width: 38px;
-  height: 38px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  width: 38px; height: 38px;
+  display: flex; align-items: center; justify-content: center;
   font-size: 15px;
   transition: var(--t-fast);
 }
 .header-btn:active { transform: scale(0.92); background: rgba(242, 233, 228, 0.2); }
 
-/* FOLLOWING MODE BANNER */
+/* FOLLOWING BANNER */
 .following-banner {
   background: linear-gradient(135deg, var(--almond), var(--lilac));
   color: var(--space);
@@ -112,12 +100,36 @@ input, textarea, select { font-family: inherit; }
   text-align: center;
   font-size: 12px;
   font-weight: 500;
-  letter-spacing: 0.02em;
   position: sticky;
   top: 60px;
   z-index: 99;
 }
 .following-banner strong { font-weight: 700; }
+
+/* UPDATE BANNER */
+.update-banner {
+  background: var(--space);
+  color: var(--parchment);
+  padding: 14px 20px;
+  text-align: center;
+  font-size: 13px;
+  font-weight: 500;
+  display: none;
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 200;
+  box-shadow: var(--shadow-md);
+}
+.update-banner.show { display: block; }
+.update-banner button {
+  background: var(--almond);
+  color: var(--space);
+  padding: 6px 14px;
+  border-radius: 16px;
+  font-weight: 600;
+  font-size: 12px;
+  margin-left: 10px;
+}
 
 /* CONTAINER */
 .container { max-width: 600px; margin: 0 auto; padding: 0 16px; }
@@ -128,7 +140,7 @@ input, textarea, select { font-family: inherit; }
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* HERO TODAY CARD */
+/* TODAY HERO */
 .hero-today {
   background: var(--cream);
   border: 1.5px solid var(--space);
@@ -137,15 +149,12 @@ input, textarea, select { font-family: inherit; }
   margin: 18px 0 14px;
   position: relative;
   box-shadow: 6px 6px 0 var(--space);
-  transition: var(--t-base);
 }
 .hero-today::before {
   content: "";
   position: absolute;
-  top: 14px;
-  right: 18px;
-  width: 8px;
-  height: 8px;
+  top: 14px; right: 18px;
+  width: 8px; height: 8px;
   border-radius: 50%;
   background: var(--almond);
   box-shadow: 0 0 0 4px rgba(201, 173, 167, 0.25);
@@ -155,36 +164,10 @@ input, textarea, select { font-family: inherit; }
   0%, 100% { box-shadow: 0 0 0 4px rgba(201, 173, 167, 0.25); }
   50% { box-shadow: 0 0 0 10px rgba(201, 173, 167, 0); }
 }
-
-.today-eyebrow {
-  font-size: 10px;
-  text-transform: uppercase;
-  letter-spacing: 0.18em;
-  color: var(--grape);
-  margin-bottom: 12px;
-  font-weight: 600;
-}
-.today-title {
-  font-family: 'Fraunces', Georgia, serif;
-  font-size: 28px;
-  font-weight: 600;
-  color: var(--space);
-  margin-bottom: 10px;
-  line-height: 1.1;
-  letter-spacing: -0.02em;
-}
-.today-subtitle {
-  font-size: 14px;
-  color: var(--grape);
-  line-height: 1.6;
-  margin-bottom: 0;
-}
-.today-meta {
-  display: flex;
-  gap: 6px;
-  margin-top: 18px;
-  flex-wrap: wrap;
-}
+.today-eyebrow { font-size: 10px; text-transform: uppercase; letter-spacing: 0.18em; color: var(--grape); margin-bottom: 12px; font-weight: 600; }
+.today-title { font-family: 'Fraunces', Georgia, serif; font-size: 28px; font-weight: 600; color: var(--space); margin-bottom: 10px; line-height: 1.1; letter-spacing: -0.02em; }
+.today-subtitle { font-size: 14px; color: var(--grape); line-height: 1.6; }
+.today-meta { display: flex; gap: 6px; margin-top: 18px; flex-wrap: wrap; }
 .meta-pill {
   font-size: 11px;
   background: var(--parchment);
@@ -196,7 +179,6 @@ input, textarea, select { font-family: inherit; }
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  transition: var(--t-fast);
 }
 .meta-pill.clickable { cursor: pointer; }
 .meta-pill.clickable:active { transform: scale(0.96); background: var(--almond); }
@@ -214,41 +196,10 @@ input, textarea, select { font-family: inherit; }
   overflow: hidden;
 }
 .tomorrow-preview:active { transform: scale(0.99); }
-.tomorrow-preview::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(135deg, transparent 60%, rgba(201, 173, 167, 0.12));
-  pointer-events: none;
-}
-.tomorrow-eyebrow {
-  font-size: 10px;
-  text-transform: uppercase;
-  letter-spacing: 0.18em;
-  opacity: 0.6;
-  margin-bottom: 6px;
-  font-weight: 600;
-}
-.tomorrow-title {
-  font-family: 'Fraunces', Georgia, serif;
-  font-size: 19px;
-  font-weight: 500;
-  margin-bottom: 4px;
-  letter-spacing: -0.01em;
-}
-.tomorrow-summary {
-  font-size: 12px;
-  opacity: 0.75;
-  line-height: 1.45;
-}
-.tomorrow-arrow {
-  position: absolute;
-  right: 18px;
-  top: 50%;
-  transform: translateY(-50%);
-  font-size: 20px;
-  opacity: 0.5;
-}
+.tomorrow-eyebrow { font-size: 10px; text-transform: uppercase; letter-spacing: 0.18em; opacity: 0.6; margin-bottom: 6px; font-weight: 600; }
+.tomorrow-title { font-family: 'Fraunces', Georgia, serif; font-size: 19px; font-weight: 500; margin-bottom: 4px; letter-spacing: -0.01em; }
+.tomorrow-summary { font-size: 12px; opacity: 0.75; line-height: 1.45; }
+.tomorrow-arrow { position: absolute; right: 18px; top: 50%; transform: translateY(-50%); font-size: 20px; opacity: 0.5; }
 
 /* COUNTDOWN */
 .countdown-wrap {
@@ -264,81 +215,29 @@ input, textarea, select { font-family: inherit; }
 .countdown-wrap::before {
   content: "";
   position: absolute;
-  top: -40%;
-  right: -10%;
-  width: 200px;
-  height: 200px;
+  top: -40%; right: -10%;
+  width: 200px; height: 200px;
   background: radial-gradient(circle, var(--lilac), transparent 65%);
   opacity: 0.18;
 }
-.countdown-label {
-  font-size: 11px;
-  text-transform: uppercase;
-  letter-spacing: 0.2em;
-  opacity: 0.6;
-  font-weight: 600;
-}
-.countdown-number {
-  font-family: 'Fraunces', Georgia, serif;
-  font-size: 96px;
-  font-weight: 400;
-  line-height: 1;
-  margin: 14px 0 8px;
-  color: var(--almond);
-  letter-spacing: -0.04em;
-}
-.countdown-suffix {
-  font-size: 13px;
-  opacity: 0.85;
-  font-weight: 400;
-  letter-spacing: 0.02em;
-}
-.countdown-progress {
-  width: 100%;
-  height: 3px;
-  background: rgba(242, 233, 228, 0.15);
-  border-radius: 2px;
-  margin-top: 22px;
-  overflow: hidden;
-}
-.countdown-progress-fill {
-  height: 100%;
-  background: var(--almond);
-  border-radius: 2px;
-  transition: width 1s ease-out;
-}
+.countdown-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.2em; opacity: 0.6; font-weight: 600; }
+.countdown-number { font-family: 'Fraunces', Georgia, serif; font-size: 96px; font-weight: 400; line-height: 1; margin: 14px 0 8px; color: var(--almond); letter-spacing: -0.04em; }
+.countdown-suffix { font-size: 13px; opacity: 0.85; }
+.countdown-progress { width: 100%; height: 3px; background: rgba(242, 233, 228, 0.15); border-radius: 2px; margin-top: 22px; overflow: hidden; }
+.countdown-progress-fill { height: 100%; background: var(--almond); border-radius: 2px; transition: width 1s ease-out; }
 
 /* SECTION TITLE */
-.section-title {
-  font-size: 14px;
-  font-weight: 600;
-  margin: 30px 0 14px;
-  color: var(--grape);
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  text-transform: uppercase;
-  letter-spacing: 0.12em;
-}
+.section-title { font-size: 14px; font-weight: 600; margin: 30px 0 14px; color: var(--grape); display: flex; align-items: center; gap: 10px; text-transform: uppercase; letter-spacing: 0.12em; }
 .section-title::before { content: ""; width: 18px; height: 2px; background: var(--grape); border-radius: 1px; }
 .section-title-meta { margin-left: auto; font-size: 11px; opacity: 0.65; letter-spacing: 0.05em; text-transform: none; font-weight: 500; }
 
 /* BLOCK GRID */
 .block-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-.block-card {
-  background: var(--cream);
-  border: 1.5px solid var(--space);
-  border-radius: var(--radius-md);
-  padding: 16px;
-  cursor: pointer;
-  transition: var(--t-fast);
-  position: relative;
-  overflow: hidden;
-}
+.block-card { background: var(--cream); border: 1.5px solid var(--space); border-radius: var(--radius-md); padding: 16px; cursor: pointer; transition: var(--t-fast); }
 .block-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
 .block-card:active { transform: scale(0.97); }
 .block-card-icon { font-size: 28px; margin-bottom: 8px; line-height: 1; }
-.block-card-title { font-weight: 600; font-size: 14px; color: var(--space); letter-spacing: -0.01em; }
+.block-card-title { font-weight: 600; font-size: 14px; color: var(--space); }
 .block-card-dates { font-size: 11px; color: var(--grape); margin-top: 2px; font-weight: 500; }
 
 /* DAY LIST */
@@ -362,20 +261,12 @@ input, textarea, select { font-family: inherit; }
 .day-item.today .day-summary { color: rgba(242,233,228,0.78); }
 .day-item.today .day-place { color: var(--almond); }
 .day-item.past { opacity: 0.45; }
-.day-date {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  min-width: 46px;
-  border-right: 1px solid currentColor;
-  padding-right: 12px;
-  opacity: 0.95;
-}
+.day-date { display: flex; flex-direction: column; align-items: center; min-width: 46px; border-right: 1px solid currentColor; padding-right: 12px; }
 .day-num { font-family: 'Fraunces', Georgia, serif; font-size: 26px; font-weight: 500; line-height: 0.95; letter-spacing: -0.03em; }
-.day-mes { font-size: 10px; text-transform: uppercase; opacity: 0.6; margin-top: 4px; font-weight: 500; letter-spacing: 0.05em; }
-.day-dia { font-size: 9px; opacity: 0.5; margin-top: 2px; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 500; }
+.day-mes { font-size: 10px; text-transform: uppercase; opacity: 0.6; margin-top: 4px; font-weight: 500; }
+.day-dia { font-size: 9px; opacity: 0.5; margin-top: 2px; text-transform: uppercase; font-weight: 500; }
 .day-info { flex: 1; min-width: 0; }
-.day-place { font-weight: 600; font-size: 14px; margin-bottom: 4px; letter-spacing: -0.01em; }
+.day-place { font-weight: 600; font-size: 14px; margin-bottom: 4px; }
 .day-summary { font-size: 12px; line-height: 1.45; color: var(--grape); }
 .day-meta-row { display: flex; gap: 5px; margin-top: 9px; flex-wrap: wrap; }
 .day-meta-pill {
@@ -391,111 +282,114 @@ input, textarea, select { font-family: inherit; }
   gap: 3px;
 }
 
-/* MONTH SEPARATOR */
-.month-sep {
-  font-family: 'Fraunces', Georgia, serif;
-  font-size: 22px;
-  font-weight: 500;
-  margin: 26px 0 14px;
-  color: var(--grape);
-  text-align: center;
-  position: relative;
-  letter-spacing: -0.01em;
-}
-.month-sep::before, .month-sep::after {
-  content: "";
-  position: absolute;
-  top: 50%;
-  width: 28%;
-  height: 1px;
-  background: var(--lilac);
-  opacity: 0.4;
-}
+.month-sep { font-family: 'Fraunces', Georgia, serif; font-size: 22px; font-weight: 500; margin: 26px 0 14px; color: var(--grape); text-align: center; position: relative; }
+.month-sep::before, .month-sep::after { content: ""; position: absolute; top: 50%; width: 28%; height: 1px; background: var(--lilac); opacity: 0.4; }
 .month-sep::before { left: 4%; }
 .month-sep::after { right: 4%; }
 
 /* DAY DETAIL */
 .day-detail { display: none; position: fixed; inset: 0; background: var(--parchment); z-index: 150; overflow-y: auto; padding-bottom: 110px; }
 .day-detail.active { display: block; animation: slideUp var(--t-base); }
-@keyframes slideUp {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-.day-detail-header {
-  background: var(--space);
-  color: var(--parchment);
-  padding: 60px 22px 30px;
-  padding-top: max(60px, calc(env(safe-area-inset-top) + 50px));
-  position: relative;
-  overflow: hidden;
-}
-.day-detail-header::before {
-  content: "";
-  position: absolute;
-  top: -50%;
-  right: -20%;
-  width: 280px;
-  height: 280px;
-  background: radial-gradient(circle, var(--lilac), transparent 60%);
-  opacity: 0.16;
-}
-.day-detail-back {
-  position: absolute;
-  top: 18px;
-  top: max(18px, calc(env(safe-area-inset-top) + 12px));
-  left: 16px;
-  background: rgba(242,233,228,0.12);
-  width: 38px;
-  height: 38px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 18px;
-  color: var(--parchment);
-  border: 1px solid rgba(242,233,228,0.2);
-  transition: var(--t-fast);
-}
+@keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+.day-detail-header { background: var(--space); color: var(--parchment); padding: 60px 22px 30px; padding-top: max(60px, calc(env(safe-area-inset-top) + 50px)); position: relative; overflow: hidden; }
+.day-detail-header::before { content: ""; position: absolute; top: -50%; right: -20%; width: 280px; height: 280px; background: radial-gradient(circle, var(--lilac), transparent 60%); opacity: 0.16; }
+.day-detail-back { position: absolute; top: 18px; top: max(18px, calc(env(safe-area-inset-top) + 12px)); left: 16px; background: rgba(242,233,228,0.12); width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 18px; color: var(--parchment); border: 1px solid rgba(242,233,228,0.2); transition: var(--t-fast); }
 .day-detail-back:active { transform: scale(0.92); }
+.day-detail-edit { position: absolute; top: 18px; top: max(18px, calc(env(safe-area-inset-top) + 12px)); right: 16px; background: rgba(242,233,228,0.12); width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; color: var(--parchment); border: 1px solid rgba(242,233,228,0.2); transition: var(--t-fast); }
+.day-detail-edit:active { transform: scale(0.92); }
 .day-detail-date { font-size: 11px; text-transform: uppercase; letter-spacing: 0.18em; opacity: 0.65; font-weight: 600; }
 .day-detail-title { font-family: 'Fraunces', Georgia, serif; font-size: 30px; font-weight: 500; margin-top: 8px; margin-bottom: 10px; letter-spacing: -0.025em; line-height: 1.1; }
 .day-detail-place { font-size: 13px; font-weight: 400; opacity: 0.78; }
 .day-detail-body { padding: 22px 16px; }
+
 .day-section-card {
   background: var(--cream);
   border: 1px solid var(--parchment-dark);
   border-radius: var(--radius-md);
-  padding: 18px 18px;
+  padding: 18px;
   margin-bottom: 12px;
-  transition: var(--t-fast);
 }
-.day-section-card:hover { box-shadow: var(--shadow-sm); }
-.day-section-label {
-  font-size: 10px;
-  text-transform: uppercase;
-  letter-spacing: 0.16em;
-  color: var(--grape);
-  margin-bottom: 10px;
-  font-weight: 600;
+.day-section-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.16em; color: var(--grape); margin-bottom: 10px; font-weight: 600; display: flex; justify-content: space-between; align-items: center; }
+.day-section-label-edit { font-size: 11px; color: var(--grape); cursor: pointer; padding: 2px 8px; border-radius: 10px; background: var(--parchment); transition: var(--t-fast); }
+.day-section-label-edit:active { transform: scale(0.95); }
+.day-section-text { font-size: 14px; line-height: 1.6; color: var(--space); white-space: pre-wrap; }
+
+/* MOMENTS (mañana / tarde / noche) */
+.moments { display: flex; flex-direction: column; gap: 14px; }
+.moment-block { display: flex; gap: 12px; align-items: flex-start; }
+.moment-icon-wrap {
+  flex-shrink: 0;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: var(--parchment);
+  border: 1px solid var(--parchment-dark);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
 }
-.day-section-text { font-size: 14px; line-height: 1.6; color: var(--space); }
-.maps-button {
+.moment-content { flex: 1; min-width: 0; }
+.moment-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.14em; color: var(--grape); font-weight: 600; margin-bottom: 4px; }
+.moment-text { font-size: 14px; line-height: 1.5; color: var(--space); white-space: pre-wrap; }
+.moment-text.empty { font-style: italic; color: var(--lilac); }
+
+/* PLACES */
+.places-list { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; }
+.place-card {
+  display: flex;
+  gap: 12px;
+  padding: 12px;
+  background: var(--parchment);
+  border: 1px solid var(--parchment-dark);
+  border-radius: var(--radius-sm);
+  align-items: center;
+}
+.place-icon {
+  width: 32px; height: 32px;
+  border-radius: 8px;
+  background: var(--almond);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  flex-shrink: 0;
+}
+.place-info { flex: 1; min-width: 0; }
+.place-name { font-weight: 500; font-size: 14px; line-height: 1.3; }
+.place-type { font-size: 10px; text-transform: uppercase; letter-spacing: 0.12em; color: var(--grape); margin-top: 2px; font-weight: 500; }
+.place-actions { display: flex; gap: 6px; }
+.place-btn {
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  background: var(--cream);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  text-decoration: none;
+  color: var(--space);
+}
+.place-btn:active { transform: scale(0.9); }
+
+.add-place-btn {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  background: var(--space);
-  color: var(--parchment);
-  padding: 10px 16px;
-  border-radius: 24px;
-  font-size: 13px;
-  text-decoration: none;
-  margin-top: 14px;
+  background: var(--parchment);
+  border: 1px dashed var(--lilac);
+  color: var(--grape);
+  padding: 10px 14px;
+  border-radius: var(--radius-sm);
+  font-size: 12px;
   font-weight: 500;
+  margin-top: 8px;
   transition: var(--t-fast);
 }
-.maps-button:active { transform: scale(0.96); }
-.day-budget-row { display: flex; justify-content: space-between; font-size: 13px; padding: 5px 0; }
-.day-budget-row.total { border-top: 1px solid var(--parchment-dark); margin-top: 8px; padding-top: 10px; font-weight: 600; }
+.add-place-btn:hover { border-style: solid; border-color: var(--space); color: var(--space); }
+.add-place-btn:active { transform: scale(0.97); }
+
 .notes-textarea {
   width: 100%;
   min-height: 84px;
@@ -504,16 +398,14 @@ input, textarea, select { font-family: inherit; }
   border-radius: var(--radius-sm);
   background: var(--parchment);
   font-family: inherit;
-  font-size: 14px;
+  font-size: 16px;
   resize: vertical;
   color: var(--space);
   line-height: 1.5;
-  transition: var(--t-fast);
 }
 .notes-textarea:focus { outline: none; border-color: var(--space); }
 
-/* DAY NAV ARROWS */
-.day-nav { display: flex; gap: 10px; margin-top: 16px; }
+.day-nav { display: flex; gap: 10px; margin-top: 20px; }
 .day-nav-btn {
   flex: 1;
   background: var(--cream);
@@ -529,7 +421,6 @@ input, textarea, select { font-family: inherit; }
 }
 .day-nav-btn:active { transform: scale(0.97); }
 .day-nav-btn.next { justify-content: flex-end; }
-.day-nav-btn-arrow { font-size: 16px; opacity: 0.7; }
 
 /* CHECKLIST */
 .checklist-section { margin-bottom: 24px; }
@@ -562,12 +453,10 @@ input, textarea, select { font-family: inherit; }
   align-items: flex-start;
   transition: var(--t-fast);
 }
-.checklist-item:hover { border-color: var(--lilac); }
 .checklist-item.done { opacity: 0.5; background: var(--parchment-dark); }
 .checklist-item.done .item-name { text-decoration: line-through; }
 .checkbox {
-  width: 22px;
-  height: 22px;
+  width: 22px; height: 22px;
   border: 1.5px solid var(--space);
   border-radius: 6px;
   flex-shrink: 0;
@@ -585,19 +474,6 @@ input, textarea, select { font-family: inherit; }
 .item-content { flex: 1; min-width: 0; cursor: pointer; }
 .item-name { font-weight: 500; font-size: 13px; line-height: 1.4; }
 .item-meta { font-size: 10px; color: var(--grape); margin-top: 4px; font-weight: 500; }
-.item-actual { font-size: 11px; color: var(--space); font-weight: 600; margin-top: 5px; background: var(--almond); padding: 3px 8px; border-radius: 4px; display: inline-block; }
-.item-edit {
-  width: 36px;
-  height: 36px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 14px;
-  flex-shrink: 0;
-  border-radius: 50%;
-  transition: var(--t-fast);
-}
-.item-edit:active { background: var(--parchment-dark); transform: scale(0.9); }
 
 /* MODALS */
 .edit-modal, .search-modal, .menu-modal {
@@ -608,13 +484,12 @@ input, textarea, select { font-family: inherit; }
   backdrop-filter: blur(6px);
   -webkit-backdrop-filter: blur(6px);
   z-index: 250;
-  padding: 0;
   align-items: flex-end;
 }
 .edit-modal.active, .search-modal.active, .menu-modal.active { display: flex; animation: fadeIn var(--t-fast); }
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-.edit-content, .menu-content {
+.edit-content, .menu-content, .search-content {
   background: var(--parchment);
   border-radius: var(--radius-lg) var(--radius-lg) 0 0;
   padding: 26px 22px;
@@ -626,18 +501,8 @@ input, textarea, select { font-family: inherit; }
   overflow-y: auto;
   animation: slideUpModal var(--t-base);
 }
-@keyframes slideUpModal {
-  from { transform: translateY(100%); }
-  to { transform: translateY(0); }
-}
-.edit-handle {
-  width: 40px;
-  height: 4px;
-  background: var(--lilac);
-  border-radius: 2px;
-  margin: 0 auto 18px;
-  opacity: 0.5;
-}
+@keyframes slideUpModal { from { transform: translateY(100%); } to { transform: translateY(0); } }
+.edit-handle { width: 40px; height: 4px; background: var(--lilac); border-radius: 2px; margin: 0 auto 18px; opacity: 0.5; }
 .edit-title { font-family: 'Fraunces', Georgia, serif; font-size: 22px; font-weight: 500; margin-bottom: 4px; letter-spacing: -0.02em; line-height: 1.2; }
 .edit-subtitle { font-size: 12px; color: var(--grape); margin-bottom: 20px; }
 .edit-field { margin-bottom: 16px; }
@@ -648,7 +513,7 @@ input, textarea, select { font-family: inherit; }
   border: 1.5px solid var(--parchment-dark);
   border-radius: var(--radius-sm);
   font-family: inherit;
-  font-size: 14px;
+  font-size: 16px;
   background: var(--cream);
   color: var(--space);
   transition: var(--t-fast);
@@ -656,47 +521,17 @@ input, textarea, select { font-family: inherit; }
 .edit-input:focus { outline: none; border-color: var(--space); background: var(--parchment); }
 .edit-textarea { min-height: 70px; resize: vertical; line-height: 1.5; }
 .edit-buttons { display: flex; gap: 10px; margin-top: 22px; }
-.btn {
-  flex: 1;
-  padding: 13px;
-  border-radius: var(--radius-sm);
-  font-weight: 600;
-  font-size: 13px;
-  font-family: inherit;
-  border: 1.5px solid var(--space);
-  transition: var(--t-fast);
-}
+.btn { flex: 1; padding: 13px; border-radius: var(--radius-sm); font-weight: 600; font-size: 14px; font-family: inherit; border: 1.5px solid var(--space); transition: var(--t-fast); }
 .btn:active { transform: scale(0.97); }
 .btn-primary { background: var(--space); color: var(--parchment); }
 .btn-secondary { background: var(--parchment); color: var(--space); }
 
 /* SEARCH */
-.search-content {
-  background: var(--parchment);
-  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
-  padding: 22px;
-  padding-top: 18px;
-  width: 100%;
-  max-width: 540px;
-  margin: 0 auto;
-  max-height: 88vh;
-  overflow-y: auto;
-  animation: slideUpModal var(--t-base);
-}
-.search-input {
-  width: 100%;
-  padding: 14px 18px;
-  border: 1.5px solid var(--space);
-  border-radius: var(--radius-sm);
-  font-family: inherit;
-  font-size: 15px;
-  background: var(--cream);
-  color: var(--space);
-}
+.search-input { width: 100%; padding: 14px 18px; border: 1.5px solid var(--space); border-radius: var(--radius-sm); font-family: inherit; font-size: 16px; background: var(--cream); color: var(--space); }
 .search-input:focus { outline: none; }
 .search-results { margin-top: 14px; max-height: 60vh; overflow-y: auto; }
 .search-result { padding: 14px; border-radius: var(--radius-sm); cursor: pointer; transition: var(--t-fast); }
-.search-result:hover, .search-result:active { background: var(--cream); }
+.search-result:active { background: var(--cream); }
 .search-result-title { font-weight: 500; font-size: 14px; }
 .search-result-meta { font-size: 11px; color: var(--grape); margin-top: 3px; font-weight: 500; }
 
@@ -719,35 +554,8 @@ input, textarea, select { font-family: inherit; }
 .menu-item:active { transform: scale(0.98); }
 .menu-item-icon { font-size: 22px; width: 32px; text-align: center; }
 .menu-item-info { flex: 1; }
-.menu-item-title { font-weight: 600; font-size: 14px; letter-spacing: -0.01em; }
+.menu-item-title { font-weight: 600; font-size: 14px; }
 .menu-item-desc { font-size: 11px; color: var(--grape); margin-top: 2px; }
-
-/* RESERVATIONS */
-.reservation-card {
-  background: var(--cream);
-  border: 1.5px solid var(--parchment-dark);
-  border-radius: var(--radius-md);
-  padding: 16px 18px;
-  margin-bottom: 10px;
-  transition: var(--t-fast);
-}
-.reservation-card:hover { border-color: var(--space); transform: translateX(2px); }
-.reservation-type { font-size: 10px; text-transform: uppercase; letter-spacing: 0.16em; color: var(--grape); margin-bottom: 5px; font-weight: 700; }
-.reservation-name { font-weight: 600; font-size: 15px; margin-bottom: 8px; letter-spacing: -0.01em; }
-.reservation-detail { font-size: 13px; color: var(--grape); line-height: 1.7; }
-.reservation-actions { display: flex; gap: 6px; margin-top: 12px; flex-wrap: wrap; }
-.reservation-btn {
-  font-size: 11px;
-  background: var(--almond);
-  padding: 6px 12px;
-  border-radius: 14px;
-  color: var(--space);
-  text-decoration: none;
-  display: inline-block;
-  font-weight: 600;
-  transition: var(--t-fast);
-}
-.reservation-btn:active { transform: scale(0.94); }
 
 /* BUDGET */
 .budget-summary {
@@ -759,16 +567,7 @@ input, textarea, select { font-family: inherit; }
   position: relative;
   overflow: hidden;
 }
-.budget-summary::before {
-  content: "";
-  position: absolute;
-  top: -30%;
-  right: -10%;
-  width: 200px;
-  height: 200px;
-  background: radial-gradient(circle, var(--lilac), transparent 65%);
-  opacity: 0.15;
-}
+.budget-summary::before { content: ""; position: absolute; top: -30%; right: -10%; width: 200px; height: 200px; background: radial-gradient(circle, var(--lilac), transparent 65%); opacity: 0.15; }
 .budget-row { display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 7px; opacity: 0.85; }
 .budget-row.big { font-family: 'Fraunces', Georgia, serif; font-size: 22px; font-weight: 500; border-top: 1px solid rgba(242,233,228,0.2); margin-top: 14px; padding-top: 14px; opacity: 1; letter-spacing: -0.02em; }
 .budget-bar { height: 6px; background: rgba(242,233,228,0.15); border-radius: 3px; margin-top: 12px; overflow: hidden; }
@@ -785,39 +584,29 @@ input, textarea, select { font-family: inherit; }
   font-size: 14px;
   margin-bottom: 18px;
   transition: var(--t-fast);
-  letter-spacing: 0.01em;
 }
 .add-expense-btn:active { transform: scale(0.98); }
 
 .expense-item {
   background: var(--cream);
   border-bottom: 1px solid var(--parchment-dark);
-  padding: 14px 6px;
+  padding: 14px 12px;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  cursor: pointer;
+  transition: var(--t-fast);
+  gap: 10px;
 }
+.expense-item:active { background: var(--parchment-dark); }
 .expense-info { flex: 1; min-width: 0; }
 .expense-cat { font-size: 10px; text-transform: uppercase; letter-spacing: 0.14em; color: var(--grape); font-weight: 600; }
 .expense-desc { font-size: 13px; margin-top: 3px; font-weight: 500; }
 .expense-date { font-size: 10px; color: var(--lilac); margin-top: 2px; font-weight: 500; }
-.expense-amount { font-weight: 600; font-size: 14px; }
-.expense-photo { width: 28px; height: 28px; border-radius: 6px; object-fit: cover; margin-right: 8px; }
-.expense-delete {
-  margin-left: 12px;
-  color: var(--lilac);
-  font-size: 16px;
-  width: 32px;
-  height: 32px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  transition: var(--t-fast);
-}
-.expense-delete:active { background: var(--parchment-dark); }
+.expense-amount-wrap { text-align: right; flex-shrink: 0; }
+.expense-amount { font-weight: 600; font-size: 14px; white-space: nowrap; }
+.expense-paid { font-size: 9px; text-transform: uppercase; color: var(--grape); margin-top: 2px; opacity: 0.7; font-weight: 600; letter-spacing: 0.1em; }
 
-/* CATEGORY BARS */
 .category-bars { margin-top: 18px; }
 .cat-bar { margin-bottom: 16px; }
 .cat-bar-header { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 6px; font-weight: 500; }
@@ -834,60 +623,26 @@ input, textarea, select { font-family: inherit; }
   position: relative;
   overflow: hidden;
 }
-.converter::before {
-  content: "";
-  position: absolute;
-  bottom: -40%;
-  left: -10%;
-  width: 200px;
-  height: 200px;
-  background: radial-gradient(circle, var(--parchment), transparent 60%);
-  opacity: 0.5;
-}
+.converter::before { content: ""; position: absolute; bottom: -40%; left: -10%; width: 200px; height: 200px; background: radial-gradient(circle, var(--parchment), transparent 60%); opacity: 0.5; }
 .converter-title { font-family: 'Fraunces', Georgia, serif; font-size: 22px; margin-bottom: 16px; font-weight: 500; letter-spacing: -0.02em; position: relative; }
 .converter-row { display: flex; gap: 8px; align-items: center; margin-bottom: 10px; position: relative; }
-.converter-input {
-  flex: 1;
-  padding: 12px 14px;
-  border-radius: var(--radius-sm);
-  border: none;
-  font-family: inherit;
-  font-size: 16px;
-  background: var(--parchment);
-  color: var(--space);
-  font-weight: 500;
-}
-.converter-input:focus { outline: 2px solid var(--space); }
+.converter-input { flex: 1; padding: 12px 14px; border-radius: var(--radius-sm); border: none; font-family: inherit; font-size: 16px; background: var(--parchment); color: var(--space); font-weight: 500; }
 .converter-currency { font-size: 11px; font-weight: 700; width: 50px; text-align: right; letter-spacing: 0.08em; }
 .converter-rate { font-size: 11px; opacity: 0.85; margin-top: 10px; text-align: right; font-weight: 500; position: relative; }
-.rate-input {
-  background: rgba(34,34,59,0.08);
-  border: 1px solid rgba(34,34,59,0.18);
-  color: var(--space);
-  padding: 4px 8px;
-  border-radius: 6px;
-  font-family: inherit;
-  font-size: 11px;
-  width: 80px;
-  text-align: center;
-  font-weight: 600;
-}
+.rate-input { background: rgba(34,34,59,0.08); border: 1px solid rgba(34,34,59,0.18); color: var(--space); padding: 4px 8px; border-radius: 6px; font-family: inherit; font-size: 12px; width: 80px; text-align: center; font-weight: 600; }
 
 /* BOTTOM NAV */
 .bottom-nav {
   position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  background: var(--parchment);
+  bottom: 0; left: 0; right: 0;
+  background: rgba(242, 233, 228, 0.92);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
   border-top: 1px solid var(--parchment-dark);
   padding: 8px 0 max(8px, env(safe-area-inset-bottom));
   display: flex;
   justify-content: space-around;
   z-index: 100;
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  background: rgba(242, 233, 228, 0.92);
 }
 .nav-btn {
   flex: 1;
@@ -907,25 +662,14 @@ input, textarea, select { font-family: inherit; }
 .nav-btn:active .nav-btn-icon { transform: scale(0.85); }
 .nav-btn.active { color: var(--space); }
 .nav-btn.active .nav-btn-icon { transform: translateY(-2px); }
-.nav-btn.active::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 24px;
-  height: 3px;
-  background: var(--space);
-  border-radius: 0 0 2px 2px;
-}
+.nav-btn.active::before { content: ""; position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 24px; height: 3px; background: var(--space); border-radius: 0 0 2px 2px; }
 
-/* FAB - QUICK EXPENSE */
+/* FAB */
 .fab {
   position: fixed;
   bottom: max(82px, calc(env(safe-area-inset-bottom) + 74px));
   right: 18px;
-  width: 56px;
-  height: 56px;
+  width: 56px; height: 56px;
   border-radius: 50%;
   background: var(--space);
   color: var(--parchment);
@@ -933,7 +677,6 @@ input, textarea, select { font-family: inherit; }
   align-items: center;
   justify-content: center;
   font-size: 24px;
-  font-weight: 300;
   box-shadow: 0 6px 20px rgba(34, 34, 59, 0.25);
   z-index: 90;
   transition: var(--t-fast);
@@ -961,38 +704,10 @@ input, textarea, select { font-family: inherit; }
 }
 .toast.visible { opacity: 1; transform: translateX(-50%) translateY(0); }
 
-/* EMPTY STATE */
 .empty-state { text-align: center; padding: 50px 20px; color: var(--grape); }
 .empty-state-icon { font-size: 44px; margin-bottom: 14px; opacity: 0.4; }
 .empty-state-text { font-size: 13px; line-height: 1.6; }
 
-/* PHOTO PREVIEW */
-.photo-preview {
-  width: 80px;
-  height: 80px;
-  border-radius: var(--radius-sm);
-  object-fit: cover;
-  border: 1px solid var(--parchment-dark);
-  margin-top: 8px;
-}
-.photo-input { display: none; }
-.photo-button {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  background: var(--cream);
-  border: 1px dashed var(--lilac);
-  color: var(--grape);
-  padding: 10px 14px;
-  border-radius: var(--radius-sm);
-  font-size: 12px;
-  cursor: pointer;
-  transition: var(--t-fast);
-  font-weight: 500;
-}
-.photo-button:hover { border-style: solid; border-color: var(--space); color: var(--space); }
-
-/* FAMILY VIEW HIDDEN ELEMENTS */
 .following-mode .hide-in-following { display: none !important; }
 
 @media (min-width: 600px) {
@@ -1003,6 +718,10 @@ input, textarea, select { font-family: inherit; }
 </style>
 </head>
 <body>
+
+<div class="update-banner" id="updateBanner">
+  Hay una actualización disponible <button onclick="reloadForUpdate()">Actualizar</button>
+</div>
 
 <header class="header">
   <div class="header-content">
@@ -1024,7 +743,7 @@ input, textarea, select { font-family: inherit; }
 <div class="search-modal" id="searchModal">
   <div class="search-content">
     <div class="edit-handle"></div>
-    <input type="text" class="search-input" id="searchInput" placeholder="Buscar día, lugar, reserva..." oninput="performSearch(this.value)">
+    <input type="text" class="search-input" id="searchInput" placeholder="Buscar día, lugar..." oninput="performSearch(this.value)">
     <div class="search-results" id="searchResults"></div>
   </div>
 </div>
@@ -1035,32 +754,6 @@ input, textarea, select { font-family: inherit; }
     <h2 style="font-family:'Fraunces',serif;font-size:22px;font-weight:500;margin-bottom:6px;letter-spacing:-0.02em;">Configuración</h2>
     <p style="font-size:12px;color:var(--grape);margin-bottom:22px;">Datos, respaldo y preferencias</p>
     
-    <div class="menu-section">
-      <div class="menu-section-title">Respaldo</div>
-      <div class="menu-item" onclick="exportData()">
-        <div class="menu-item-icon">⬇️</div>
-        <div class="menu-item-info">
-          <div class="menu-item-title">Exportar todo</div>
-          <div class="menu-item-desc">Descargá un archivo JSON con tus datos</div>
-        </div>
-      </div>
-      <div class="menu-item" onclick="document.getElementById('importInput').click()">
-        <div class="menu-item-icon">⬆️</div>
-        <div class="menu-item-info">
-          <div class="menu-item-title">Importar datos</div>
-          <div class="menu-item-desc">Restaurá un archivo JSON exportado</div>
-        </div>
-        <input type="file" id="importInput" accept=".json,application/json" style="display:none;" onchange="importData(event)">
-      </div>
-      <div class="menu-item" onclick="emailBackup()">
-        <div class="menu-item-icon">📧</div>
-        <div class="menu-item-info">
-          <div class="menu-item-title">Backup por email</div>
-          <div class="menu-item-desc">Mandate los datos a tu propio mail</div>
-        </div>
-      </div>
-    </div>
-
     <div class="menu-section">
       <div class="menu-section-title">Compartir</div>
       <div class="menu-item" onclick="shareFollowing()">
@@ -1074,25 +767,44 @@ input, textarea, select { font-family: inherit; }
         <div class="menu-item-icon">💬</div>
         <div class="menu-item-info">
           <div class="menu-item-title">Compartir el día de hoy</div>
-          <div class="menu-item-desc">Copiar mensaje listo para WhatsApp</div>
+          <div class="menu-item-desc">Mensaje listo para WhatsApp</div>
         </div>
       </div>
     </div>
 
     <div class="menu-section">
-      <div class="menu-section-title">App</div>
-      <div class="menu-item" onclick="installPWA()">
-        <div class="menu-item-icon">📱</div>
+      <div class="menu-section-title">Respaldo</div>
+      <div class="menu-item" onclick="exportData()">
+        <div class="menu-item-icon">⬇️</div>
         <div class="menu-item-info">
-          <div class="menu-item-title">Instalar como app</div>
-          <div class="menu-item-desc">En el celu, en pantalla de inicio</div>
+          <div class="menu-item-title">Exportar todo</div>
+          <div class="menu-item-desc">JSON con tus datos</div>
+        </div>
+      </div>
+      <div class="menu-item" onclick="document.getElementById('importInput').click()">
+        <div class="menu-item-icon">⬆️</div>
+        <div class="menu-item-info">
+          <div class="menu-item-title">Importar datos</div>
+          <div class="menu-item-desc">Restaurar desde JSON</div>
+        </div>
+        <input type="file" id="importInput" accept=".json" style="display:none;" onchange="importData(event)">
+      </div>
+    </div>
+
+    <div class="menu-section">
+      <div class="menu-section-title">App</div>
+      <div class="menu-item" onclick="checkForUpdate()">
+        <div class="menu-item-icon">🔄</div>
+        <div class="menu-item-info">
+          <div class="menu-item-title">Buscar actualizaciones</div>
+          <div class="menu-item-desc">Forzar refresh</div>
         </div>
       </div>
       <div class="menu-item" onclick="resetData()">
-        <div class="menu-item-icon">🔄</div>
+        <div class="menu-item-icon">🗑️</div>
         <div class="menu-item-info">
           <div class="menu-item-title">Resetear datos</div>
-          <div class="menu-item-desc">Borrar gastos, notas, reservas (no el plan)</div>
+          <div class="menu-item-desc">Borrar gastos, notas, ediciones</div>
         </div>
       </div>
     </div>
@@ -1101,32 +813,27 @@ input, textarea, select { font-family: inherit; }
   </div>
 </div>
 
-<!-- TAB: HOME -->
 <div class="tab-content active container" id="tab-home">
   <div id="todayCard"></div>
   <div id="tomorrowCard"></div>
   <div id="countdownCard"></div>
-  
   <div class="section-title">Bloques del viaje</div>
   <div class="block-grid" id="blockGrid"></div>
-  
   <div class="section-title hide-in-following">Pendientes urgentes</div>
   <div id="urgentItems" class="hide-in-following"></div>
 </div>
 
-<!-- TAB: CALENDAR -->
 <div class="tab-content container" id="tab-calendar">
   <div class="section-title">Día por día</div>
   <div class="day-list" id="dayList"></div>
 </div>
 
-<!-- TAB: CHECKLIST -->
 <div class="tab-content container" id="tab-checklist">
   <div class="section-title">Comprar y reservar</div>
+  <p style="font-size:12px;color:var(--grape);margin-bottom:14px;">Marcá lo que ya hiciste. Los precios y vouchers se cargan en <strong>Plata</strong>.</p>
   <div id="checklistContainer"></div>
 </div>
 
-<!-- TAB: BUDGET -->
 <div class="tab-content container" id="tab-budget">
   <div class="section-title">Presupuesto</div>
   <div class="budget-summary" id="budgetSummary"></div>
@@ -1151,22 +858,14 @@ input, textarea, select { font-family: inherit; }
   <div class="section-title">Por categoría</div>
   <div class="category-bars" id="categoryBars"></div>
   
-  <div class="section-title">Gastos cargados <span class="section-title-meta" id="expensesCount"></span></div>
+  <div class="section-title">Todos los gastos <span class="section-title-meta" id="expensesCount"></span></div>
   <div id="expensesList"></div>
 </div>
 
-<!-- TAB: RESERVATIONS -->
-<div class="tab-content container" id="tab-reservations">
-  <div class="section-title">Mis reservas</div>
-  <p style="font-size:12px;color:var(--grape);margin-bottom:16px;">Las compras del checklist marcadas como hechas aparecen acá automáticamente.</p>
-  <button class="add-expense-btn" onclick="openAddReservation()">+ Reserva manual</button>
-  <div id="reservationsList"></div>
-</div>
-
-<!-- DAY DETAIL FULLSCREEN -->
 <div class="day-detail" id="dayDetail">
   <div class="day-detail-header">
     <button class="day-detail-back" onclick="closeDayDetail()" aria-label="Volver">←</button>
+    <button class="day-detail-edit hide-in-following" onclick="editDayHeader()" aria-label="Editar">✏️</button>
     <div class="day-detail-date" id="ddDate"></div>
     <div class="day-detail-title" id="ddTitle"></div>
     <div class="day-detail-place" id="ddPlace"></div>
@@ -1178,13 +877,10 @@ input, textarea, select { font-family: inherit; }
   <div class="edit-content" id="editContent"></div>
 </div>
 
-<!-- FAB -->
 <button class="fab hide-in-following" id="fab" onclick="quickExpense()" aria-label="Gasto rápido">+</button>
 
-<!-- TOAST -->
 <div class="toast" id="toast"></div>
 
-<!-- BOTTOM NAV -->
 <nav class="bottom-nav">
   <button class="nav-btn active" data-tab="home" onclick="switchTab('home')">
     <div class="nav-btn-icon">🏠</div><div>Hoy</div>
@@ -1198,1036 +894,8 @@ input, textarea, select { font-family: inherit; }
   <button class="nav-btn hide-in-following" data-tab="budget" onclick="switchTab('budget')">
     <div class="nav-btn-icon">€</div><div>Plata</div>
   </button>
-  <button class="nav-btn hide-in-following" data-tab="reservations" onclick="switchTab('reservations')">
-    <div class="nav-btn-icon">🎫</div><div>Reservas</div>
-  </button>
 </nav>
 
-<script>
-// ============= MODO FAMILIA =============
-const urlParams = new URLSearchParams(window.location.search);
-const FOLLOWING_MODE = urlParams.get('modo') === 'siguiendo';
-if (FOLLOWING_MODE) {
-  document.body.classList.add('following-mode');
-  document.getElementById('followingBanner').style.display = 'block';
-}
-
-// ============= DATA =============
-const TRIP = { startDate: '2026-05-18', endDate: '2026-06-22', name: 'Jesi' };
-
-const DAYS = [
-  { date: '2026-05-18', day: 'Lun', city: 'travel', place: 'Vuelo Argentina → Milán', summary: 'Día completo en el aire. Tip: melatonina, hidratarse, dormir lo que puedas.', sleeping: 'Avión', work: false, mapsQuery: '' },
-  { date: '2026-05-19', day: 'Mar', city: 'travel', place: 'Milán → Chieti', summary: 'Llegada Malpensa. Malpensa Express → Milán Centrale → Frecciarossa a Pescara → tren regional a Chieti. ~5-6h total.', sleeping: 'Casa amigos Chieti', work: false, mapsQuery: 'Chieti, Italy' },
-  { date: '2026-05-20', day: 'Mié', city: 'chieti', place: 'Chieti', summary: 'Mañana libre 8-13. Trabajo 14-23 (9-18 hs Argentina).', sleeping: 'Casa amigos', work: true, mapsQuery: 'Chieti, Italy' },
-  { date: '2026-05-21', day: 'Jue', city: 'chieti', place: 'Chieti', summary: 'Mañana libre. Trabajo 14-23.', sleeping: 'Casa amigos', work: true, mapsQuery: '' },
-  { date: '2026-05-22', day: 'Vie', city: 'chieti', place: 'Chieti', summary: 'Mañana libre. Trabajo 14-23.', sleeping: 'Casa amigos', work: true, mapsQuery: '' },
-  { date: '2026-05-23', day: 'Sáb', city: 'chieti', place: 'Chieti - descanso', summary: 'Día libre. Aclimatación, descanso, caminata por Chieti Alta. Cena con amigos.', sleeping: 'Casa amigos', work: false, mapsQuery: 'Chieti Alta' },
-  { date: '2026-05-24', day: 'Dom', city: 'chieti', place: 'Chieti - descanso', summary: 'Descanso o paseo a Pescara (15 min en tren). Lungomare, café.', sleeping: 'Casa amigos', work: false, mapsQuery: 'Pescara lungomare' },
-  { date: '2026-05-25', day: 'Lun', city: 'chieti', place: 'Sulmona en el día', summary: 'Tren Chieti→Sulmona (1h). Plaza Garibaldi, acueducto medieval, confetti Pelino. Almuerzo pasta a la chitarra. Vuelta tarde. Trabajo 14-23.', sleeping: 'Casa amigos', work: true, mapsQuery: 'Sulmona, Italy' },
-  { date: '2026-05-26', day: 'Mar', city: 'chieti', place: 'Chieti', summary: 'Trabajo.', sleeping: 'Casa amigos', work: true, mapsQuery: '' },
-  { date: '2026-05-27', day: 'Mié', city: 'chieti', place: 'Chieti', summary: 'Trabajo.', sleeping: 'Casa amigos', work: true, mapsQuery: '' },
-  { date: '2026-05-28', day: 'Jue', city: 'chieti', place: 'Chieti', summary: 'Trabajo.', sleeping: 'Casa amigos', work: true, mapsQuery: '' },
-  { date: '2026-05-29', day: 'Vie', city: 'chieti', place: 'Chieti', summary: 'Trabajo.', sleeping: 'Casa amigos', work: true, mapsQuery: '' },
-  { date: '2026-05-30', day: 'Sáb', city: 'chieti', place: 'Scanno', summary: 'Tarde: tren Chieti→Sulmona + bus a Scanno. Caminar pueblo medieval, callecitas, viejas tejiendo presentose. Cena cazuela montaña.', sleeping: 'B&B Scanno', work: false, mapsQuery: 'Scanno, Italy' },
-  { date: '2026-05-31', day: 'Dom', city: 'chieti', place: 'Scanno → Chieti', summary: 'Mañana Scanno: subida al mirador Lago di Scanno (corazón) o paseo tranquilo. Vuelta tarde a Chieti.', sleeping: 'Casa amigos', work: false, mapsQuery: 'Lago di Scanno' },
-  { date: '2026-06-01', day: 'Lun', city: 'chieti', place: 'Chieti', summary: 'Trabajo.', sleeping: 'Casa amigos', work: true, mapsQuery: '' },
-  { date: '2026-06-02', day: 'Mar', city: 'chieti', place: 'Chieti', summary: 'Trabajo.', sleeping: 'Casa amigos', work: true, mapsQuery: '' },
-  { date: '2026-06-03', day: 'Mié', city: 'chieti', place: 'Chieti', summary: 'Trabajo.', sleeping: 'Casa amigos', work: true, mapsQuery: '' },
-  { date: '2026-06-04', day: 'Jue', city: 'chieti', place: 'Chieti', summary: 'Trabajo.', sleeping: 'Casa amigos', work: true, mapsQuery: '' },
-  { date: '2026-06-05', day: 'Vie', city: 'chieti', place: 'Chieti - despedida', summary: 'ÚLTIMO día de trabajo. Despedida con amigos a la noche.', sleeping: 'Casa amigos', work: true, mapsQuery: '' },
-  { date: '2026-06-06', day: 'Sáb', city: 'puglia', place: 'Chieti → Bari', summary: 'Tren mañana Chieti→Bari (3h30). Tarde: Bari Vecchia, focaccia barese, Strada delle Orecchiette (señoras haciendo pasta).', sleeping: 'Bari', work: false, mapsQuery: 'Bari Vecchia' },
-  { date: '2026-06-07', day: 'Dom', city: 'puglia', place: 'Polignano + Monopoli', summary: 'Tren Bari→Polignano (30 min) + Monopoli. Cala Porto, acantilados, almuerzo de pescado.', sleeping: 'Bari', work: false, mapsQuery: 'Polignano a Mare' },
-  { date: '2026-06-08', day: 'Lun', city: 'puglia', place: 'Alberobello + Locorotondo', summary: 'Tren a Alberobello (1h45). Trulli de día y al atardecer. Locorotondo (15 min): pueblo blanco redondo. Vuelta a Bari.', sleeping: 'Bari', work: false, mapsQuery: 'Alberobello' },
-  { date: '2026-06-09', day: 'Mar', city: 'puglia', place: 'Bari → Matera', summary: 'Mediodía: bus Bari→Matera (1h15). Tarde-noche: Sassi iluminados, Belvedere Murgia Timone, cena en Sasso.', sleeping: 'Sasso Matera', work: false, mapsQuery: 'Sassi di Matera' },
-  { date: '2026-06-10', day: 'Mié', city: 'puglia', place: 'Matera → Lecce', summary: 'Mañana Matera: Casa Grotta, Cripta del Peccato (opcional). Mediodía: bus Matera→Bari + tren Bari→Lecce. Tarde Lecce: Piazza SantOronzo, anfiteatro romano.', sleeping: 'Lecce', work: false, mapsQuery: 'Lecce, Italy' },
-  { date: '2026-06-11', day: 'Jue', city: 'puglia', place: 'Otranto o Gallipoli', summary: 'Día de playa cristalina en el Salento. Tren Lecce→Otranto (1h) - playa transparente y casco amurallado bizantino. O Gallipoli.', sleeping: 'Lecce', work: false, mapsQuery: 'Otranto, Italy' },
-  { date: '2026-06-12', day: 'Vie', city: 'travel', place: 'Lecce → Bari → Málaga → Granada 🌹', summary: 'Mañana Lecce. Tren Lecce→Bari. Vuelo Bari→Málaga. Tren AVANT Málaga 18:50 → Granada 20:00. Cena en mi lugar en el mundo.', sleeping: 'Granada', work: false, mapsQuery: 'Granada, Spain' },
-  { date: '2026-06-13', day: 'Sáb', city: 'granada', place: 'Mi lugar en el mundo 🌹', summary: 'Día en Granada.', sleeping: 'Granada', work: false, mapsQuery: 'Granada, Spain' },
-  { date: '2026-06-14', day: 'Dom', city: 'granada', place: 'Mi lugar en el mundo 🌹', summary: 'Día en Granada.', sleeping: 'Granada', work: false, mapsQuery: '' },
-  { date: '2026-06-15', day: 'Lun', city: 'granada', place: 'Mi lugar en el mundo 🌹', summary: 'Día en Granada.', sleeping: 'Granada', work: false, mapsQuery: '' },
-  { date: '2026-06-16', day: 'Mar', city: 'granada', place: 'Mi lugar en el mundo 🌹', summary: 'Día en Granada.', sleeping: 'Granada', work: false, mapsQuery: '' },
-  { date: '2026-06-17', day: 'Mié', city: 'malaga', place: 'Granada → Málaga', summary: 'Mañana Granada (despedida). Tren AVANT 18:50 → Málaga 20:00. Cena en Málaga.', sleeping: 'Málaga', work: false, mapsQuery: 'Málaga, Spain' },
-  { date: '2026-06-18', day: 'Jue', city: 'malaga', place: 'Ronda + Málaga', summary: 'Tren 8:08 Málaga→Ronda (1h45). Ronda: Puente Nuevo, casco antiguo, plaza de toros. Almuerzo. Tarde: Alcazaba, Teatro Romano, casco antiguo. Cena tapas en El Pimpi.', sleeping: 'Málaga', work: false, mapsQuery: 'Ronda, Spain' },
-  { date: '2026-06-19', day: 'Vie', city: 'travel', place: 'Málaga → Milán', summary: 'Mañana Málaga relax: Gibralfaro, Mercado Atarazanas, Picasso, playa Malagueta. 13:00 tren Cercanías. Vuelo 15:10 → Milán Bergamo 17:50. Bus a Milán Centrale.', sleeping: 'Milán', work: false, mapsQuery: 'Milano, Italy' },
-  { date: '2026-06-20', day: 'Sáb', city: 'milan', place: 'Milán clásico', summary: 'Duomo + terraza, Galleria, Scala, Brera, Castello Sforzesco, Parco Sempione, Bosco Verticale. Aperitivo en Navigli.', sleeping: 'Milán', work: false, mapsQuery: 'Duomo di Milano' },
-  { date: '2026-06-21', day: 'Dom', city: 'milan', place: 'Bergamo en el día', summary: 'Tren a Bergamo (50 min). Bergamo Alta: Piazza Vecchia, Santa Maria Maggiore, Capilla Colleoni. Almuerzo bergamasco. Vuelta a Milán para cena despedida.', sleeping: 'Milán', work: false, mapsQuery: 'Bergamo Alta' },
-  { date: '2026-06-22', day: 'Lun', city: 'travel', place: 'Vuelta a Argentina', summary: 'Malpensa Express → vuelo a casa. Llegar 3hs antes. Mañana 23 ya estás laburando. Bienvenida a tu vida real ✨', sleeping: 'Avión / Casa', work: false, mapsQuery: '' }
-];
-
-const BLOCKS = [
-  { id: 'llegada', icon: '✈️', title: 'Llegada', dates: '18-19 may', firstDay: '2026-05-18' },
-  { id: 'chieti', icon: '🏔️', title: 'Chieti', dates: '20 may - 5 jun', firstDay: '2026-05-20' },
-  { id: 'puglia', icon: '🫒', title: 'Puglia', dates: '6-12 jun', firstDay: '2026-06-06' },
-  { id: 'andalucia', icon: '🌹', title: 'Andalucía', dates: '12-19 jun', firstDay: '2026-06-12' },
-  { id: 'milan', icon: '⛪', title: 'Milán', dates: '19-21 jun', firstDay: '2026-06-19' },
-  { id: 'vuelta', icon: '🏠', title: 'Vuelta', dates: '22 jun', firstDay: '2026-06-22' },
-];
-
-const CHECKLIST_ITEMS = [
-  { id: 'v1', priority: 1, text: 'Vuelo Bari → Málaga', dateUse: 'Vie 12 jun', estimate: '60-100 EU', notes: 'Ryanair. COMPRAR YA.' },
-  { id: 'v2', priority: 1, text: 'Vuelo Málaga → Milán Bergamo', dateUse: 'Vie 19 jun, salida ~15:10', estimate: '50-100 EU', notes: 'Ryanair / EasyJet. COMPRAR YA.' },
-  { id: 'v3', priority: 1, text: 'Frecciarossa Milano Centrale → Pescara', dateUse: 'Mar 19 may', estimate: '40-90 EU', notes: 'trenitalia.com - Tarifa Super Economy.' },
-  { id: 'v4', priority: 1, text: 'Alojamiento Sasso en Matera (1 noche)', dateUse: 'Mar 9 jun', estimate: '70-130 EU', notes: 'Booking/Airbnb. Buscar "sasso".' },
-  { id: 'a1', priority: 2, text: 'Alojamiento Bari (3 noches)', dateUse: 'Sáb 6 al lun 8 jun', estimate: '180-300 EU', notes: 'Hostel privado o B&B en Bari Vecchia.' },
-  { id: 'a2', priority: 2, text: 'Alojamiento Lecce (2 noches)', dateUse: 'Mié 10 al jue 11 jun', estimate: '120-220 EU', notes: 'Hostel privado o B&B.' },
-  { id: 'a3', priority: 2, text: 'Alojamiento Granada (5 noches)', dateUse: 'Vie 12 al mar 16 jun', estimate: '300-550 EU', notes: 'Albaicín / Realejo / centro.' },
-  { id: 'a4', priority: 2, text: 'Alojamiento Málaga (2 noches)', dateUse: 'Mié 17 al jue 18 jun', estimate: '120-220 EU', notes: 'Centro o cerca María Zambrano.' },
-  { id: 'a5', priority: 2, text: 'Alojamiento Milán (2 noches)', dateUse: 'Vie 19 al sáb 20 jun', estimate: '140-220 EU', notes: 'Centrale, Brera, Navigli o Porta Romana.' },
-  { id: 'a6', priority: 2, text: 'La Última Cena (Da Vinci) - opcional', dateUse: 'Sáb 20 o dom 21 jun', estimate: '17 EU', notes: 'cenacolovinciano.org - Se agota 2-3 meses antes.' },
-  { id: 't1', priority: 3, text: 'Tren AVANT Málaga → Granada', dateUse: 'Vie 12 jun (18:50)', estimate: '23 EU', notes: 'renfe.com en mayo.' },
-  { id: 't2', priority: 3, text: 'Tren AVANT Granada → Málaga', dateUse: 'Mié 17 jun (18:50)', estimate: '23 EU', notes: 'renfe.com en mayo.' },
-  { id: 't3', priority: 3, text: 'Tren Frecciarossa Chieti → Bari', dateUse: 'Sáb 6 jun temprano', estimate: '30-50 EU', notes: 'Comprar en mayo para Super Economy.' },
-  { id: 't4', priority: 3, text: 'B&B Scanno (1 noche)', dateUse: 'Sáb 30 may', estimate: '60-90 EU', notes: 'Booking. Pueblo chico, pocas plazas.' },
-  { id: 't5', priority: 3, text: 'Cripta del Peccato Originale - opcional', dateUse: 'Mié 10 jun (Matera)', estimate: '12 EU', notes: 'criptadelpeccatooriginale.it' },
-  { id: 'l1', priority: 4, text: 'Tren regional Pescara → Chieti', dateUse: 'Mar 19 may', estimate: '3 EU', notes: 'En la estación. 15 min.' },
-  { id: 'l2', priority: 4, text: 'Tren Chieti → Sulmona ida y vuelta', dateUse: 'Dom 25 may', estimate: '8-12 EU', notes: 'Regional, en estación.' },
-  { id: 'l3', priority: 4, text: 'Tren + bus Chieti → Sulmona → Scanno', dateUse: 'Sáb 30 may', estimate: '15-20 EU', notes: 'App TUA mycicero. Verificar horarios.' },
-  { id: 'l4', priority: 4, text: 'Trenes regionales Puglia', dateUse: '7-11 jun', estimate: '50-80 EU total', notes: 'Bari-Polignano, Bari-Alberobello, Bari-Lecce, Lecce-Otranto.' },
-  { id: 'l5', priority: 4, text: 'Bus Bari ↔ Matera', dateUse: '9-10 jun', estimate: '20 EU', notes: 'busmiccolis.com / flixbus.com' },
-  { id: 'l6', priority: 4, text: 'Tren Málaga ↔ Ronda', dateUse: 'Jue 18 jun', estimate: '25-30 EU', notes: 'renfe.com - Salida 8:08 hs Málaga.' },
-  { id: 'l7', priority: 4, text: 'Bus Bergamo aeropuerto → Milán', dateUse: 'Vie 19 jun llegada', estimate: '10 EU', notes: 'En aeropuerto, 1h.' },
-  { id: 'l8', priority: 4, text: 'Tren Milán ↔ Bergamo', dateUse: 'Dom 21 jun', estimate: '10-15 EU', notes: 'Regional, 50 min.' },
-  { id: 'l9', priority: 4, text: 'Malpensa Express → aeropuerto', dateUse: 'Lun 22 jun', estimate: '13 EU', notes: '50 min.' },
-  { id: 'o1', priority: 5, text: 'Tarjeta Wise o Revolut', dateUse: 'Antes de viajar', estimate: '0-20 EU', notes: 'Para evitar comisiones argentinas.' },
-  { id: 'o2', priority: 5, text: 'eSIM (Holafly o Airalo)', dateUse: 'Antes de viajar', estimate: '30-50 EU', notes: '30 días con datos. Activar al llegar.' },
-  { id: 'o3', priority: 5, text: 'Avisar al banco fechas y países', dateUse: 'Antes de viajar', estimate: '0', notes: 'Para que no bloqueen tarjetas.' },
-  { id: 'o4', priority: 5, text: 'Foto pasaporte + scans en Drive', dateUse: 'Antes de viajar', estimate: '0', notes: 'Compartir con persona de confianza.' },
-  { id: 'o5', priority: 5, text: 'Apps: TUA mycicero, Trenitalia, Renfe, Ryanair', dateUse: 'Antes de viajar', estimate: '0', notes: 'Bajar todas las apps.' },
-];
-
-const PRIORITY_LABELS = {
-  1: { name: 'Nivel 1 · Comprar ya', class: 'urgent' },
-  2: { name: 'Nivel 2 · 2-3 semanas', class: 'priority2' },
-  3: { name: 'Nivel 3 · En mayo', class: 'priority3' },
-  4: { name: 'Nivel 4 · Allá', class: 'priority4' },
-  5: { name: 'Otros', class: 'others' },
-};
-
-const CITY_NAMES = { chieti: 'Chieti / Abruzzo', puglia: 'Puglia / Matera', granada: 'Granada', malaga: 'Málaga', milan: 'Milán', travel: 'Viaje' };
-const CITY_ICONS = { chieti: '🏔️', puglia: '🫒', granada: '🌹', malaga: '🌊', milan: '⛪', travel: '✈️' };
-
-const EXPENSE_CATEGORIES = [
-  { id: 'transporte', name: 'Transporte', color: '#22223b' },
-  { id: 'alojamiento', name: 'Alojamiento', color: '#4a4e69' },
-  { id: 'comida', name: 'Comida', color: '#9a8c98' },
-  { id: 'entradas', name: 'Entradas', color: '#c9ada7' },
-  { id: 'otros', name: 'Otros', color: '#7d6e7a' },
-];
-
-let state = { checklist: {}, expenses: [], reservations: [], exchangeRate: 1100, notes: {} };
-
-function loadState() {
-  try {
-    const saved = localStorage.getItem('viaje2026');
-    if (saved) state = { ...state, ...JSON.parse(saved) };
-  } catch (e) { console.warn('No load', e); }
-}
-function saveState() {
-  if (FOLLOWING_MODE) return;
-  try { localStorage.setItem('viaje2026', JSON.stringify(state)); }
-  catch (e) { console.warn('No save', e); }
-}
-
-// ============= UTILS =============
-function getToday() { return new Date().toISOString().split('T')[0]; }
-function parseDate(s) { return new Date(s + 'T12:00:00'); }
-function formatDate(s, fmt) {
-  const d = parseDate(s);
-  const months = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
-  if (fmt === 'long') {
-    const days = ['domingo','lunes','martes','miércoles','jueves','viernes','sábado'];
-    return days[d.getDay()] + ' ' + d.getDate() + ' de ' + months[d.getMonth()];
-  }
-  if (fmt === 'short') return d.getDate() + ' ' + months[d.getMonth()];
-  return d.getDate() + ' ' + months[d.getMonth()];
-}
-function daysBetween(from, to) {
-  return Math.round((parseDate(to) - parseDate(from)) / 86400000);
-}
-function tomorrowDate() {
-  const t = new Date();
-  t.setDate(t.getDate() + 1);
-  return t.toISOString().split('T')[0];
-}
-
-function showToast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('visible');
-  clearTimeout(window._toastTimer);
-  window._toastTimer = setTimeout(() => t.classList.remove('visible'), 2400);
-}
-
-// ============= TODAY VIEW =============
-function renderToday() {
-  const today = getToday();
-  const tomorrow = tomorrowDate();
-  const tripDay = DAYS.find(d => d.date === today);
-  const tripDayTomorrow = DAYS.find(d => d.date === tomorrow);
-  const todayCard = document.getElementById('todayCard');
-  const tomorrowCard = document.getElementById('tomorrowCard');
-  const cdCard = document.getElementById('countdownCard');
-  
-  if (tripDay) {
-    todayCard.innerHTML = `
-      <div class="hero-today">
-        <div class="today-eyebrow">Hoy · ${formatDate(today, 'long')}</div>
-        <div class="today-title">${tripDay.place}</div>
-        <div class="today-subtitle">${tripDay.summary}</div>
-        <div class="today-meta">
-          <div class="meta-pill">🛏️ ${tripDay.sleeping}</div>
-          ${tripDay.work ? '<div class="meta-pill">💻 trabajo 14-23</div>' : '<div class="meta-pill">🌴 día libre</div>'}
-          ${tripDay.mapsQuery ? `<div class="meta-pill clickable" onclick="openMaps('${tripDay.mapsQuery}')">📍 maps</div>` : ''}
-        </div>
-      </div>
-    `;
-    cdCard.innerHTML = '';
-    
-    if (tripDayTomorrow) {
-      tomorrowCard.innerHTML = `
-        <div class="tomorrow-preview" onclick="openDayDetail('${tomorrow}')">
-          <div class="tomorrow-eyebrow">Mañana</div>
-          <div class="tomorrow-title">${tripDayTomorrow.place}</div>
-          <div class="tomorrow-summary">${tripDayTomorrow.summary.length > 90 ? tripDayTomorrow.summary.substring(0,90)+'…' : tripDayTomorrow.summary}</div>
-          <div class="tomorrow-arrow">→</div>
-        </div>
-      `;
-    } else {
-      tomorrowCard.innerHTML = '';
-    }
-  } else {
-    const days = daysBetween(today, TRIP.startDate);
-    const totalDays = daysBetween('2026-01-01', TRIP.startDate);
-    const elapsed = daysBetween('2026-01-01', today);
-    const progress = Math.max(0, Math.min(100, (elapsed/totalDays)*100));
-    
-    if (days > 0) {
-      todayCard.innerHTML = '';
-      tomorrowCard.innerHTML = '';
-      cdCard.innerHTML = `
-        <div class="countdown-wrap">
-          <div class="countdown-label">Faltan</div>
-          <div class="countdown-number">${days}</div>
-          <div class="countdown-suffix">días para Italia</div>
-          <div class="countdown-progress"><div class="countdown-progress-fill" style="width:${progress}%"></div></div>
-        </div>
-      `;
-    } else if (today > TRIP.endDate) {
-      cdCard.innerHTML = '';
-      tomorrowCard.innerHTML = '';
-      todayCard.innerHTML = `
-        <div class="hero-today">
-          <div class="today-eyebrow">Viaje terminado</div>
-          <div class="today-title">¡Bienvenida a casa!</div>
-          <div class="today-subtitle">Esperamos que la hayas pasado increíble. Las notas y fotos del viaje quedan en cada día.</div>
-        </div>
-      `;
-    } else {
-      cdCard.innerHTML = '';
-      tomorrowCard.innerHTML = '';
-      todayCard.innerHTML = '<div class="hero-today"><div class="today-eyebrow">Hoy</div><div class="today-title">Día sin plan registrado</div></div>';
-    }
-  }
-  
-  renderBlockGrid();
-  if (!FOLLOWING_MODE) renderUrgentItems();
-}
-
-function renderBlockGrid() {
-  document.getElementById('blockGrid').innerHTML = BLOCKS.map(b => `
-    <div class="block-card" onclick="goToBlock('${b.firstDay}')">
-      <div class="block-card-icon">${b.icon}</div>
-      <div class="block-card-title">${b.title}</div>
-      <div class="block-card-dates">${b.dates}</div>
-    </div>
-  `).join('');
-}
-
-function renderUrgentItems() {
-  const urgent = CHECKLIST_ITEMS.filter(i => i.priority === 1 && !state.checklist[i.id]);
-  const cont = document.getElementById('urgentItems');
-  if (urgent.length === 0) {
-    cont.innerHTML = '<div style="padding:16px;background:linear-gradient(135deg,var(--grape),var(--space));color:var(--parchment);border-radius:14px;text-align:center;font-weight:500;font-size:13px;letter-spacing:0.01em;">✨ Todo lo urgente está comprado</div>';
-    return;
-  }
-  cont.innerHTML = urgent.map(i => `
-    <div class="checklist-item" onclick="switchTab('checklist')">
-      <div class="checkbox"></div>
-      <div class="item-content">
-        <div class="item-name">${i.text}</div>
-        <div class="item-meta">${i.dateUse} · ${i.estimate}</div>
-      </div>
-    </div>
-  `).join('');
-}
-
-function goToBlock(firstDay) {
-  switchTab('calendar');
-  setTimeout(() => {
-    const el = document.querySelector('[data-day="' + firstDay + '"]');
-    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-  }, 120);
-}
-
-// ============= CALENDAR =============
-function renderCalendar() {
-  const today = getToday();
-  const list = document.getElementById('dayList');
-  const months = { '2026-05': 'Mayo', '2026-06': 'Junio' };
-  const monthsShort = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
-  let html = '';
-  let lastMonth = '';
-  
-  DAYS.forEach(d => {
-    const monthKey = d.date.substring(0, 7);
-    if (monthKey !== lastMonth) {
-      html += '<div class="month-sep">' + months[monthKey] + '</div>';
-      lastMonth = monthKey;
-    }
-    const dt = parseDate(d.date);
-    const isToday = d.date === today;
-    const isPast = d.date < today;
-    const cls = isToday ? 'today' : (isPast ? 'past' : '');
-    
-    html += `
-      <div class="day-item ${cls}" data-day="${d.date}" onclick="openDayDetail('${d.date}')">
-        <div class="day-date">
-          <div class="day-num">${dt.getDate()}</div>
-          <div class="day-mes">${monthsShort[dt.getMonth()]}</div>
-          <div class="day-dia">${d.day}</div>
-        </div>
-        <div class="day-info">
-          <div class="day-place">${d.place}</div>
-          <div class="day-summary">${d.summary.length > 100 ? d.summary.substring(0, 100) + '…' : d.summary}</div>
-          <div class="day-meta-row">
-            <div class="day-meta-pill">🛏️ ${d.sleeping}</div>
-            ${d.work ? '<div class="day-meta-pill">💻 trabajo</div>' : ''}
-          </div>
-        </div>
-      </div>
-    `;
-  });
-  list.innerHTML = html;
-}
-
-function openDayDetail(date) {
-  const d = DAYS.find(x => x.date === date);
-  if (!d) return;
-  
-  document.getElementById('ddDate').textContent = formatDate(date, 'long');
-  document.getElementById('ddTitle').textContent = d.place;
-  document.getElementById('ddPlace').textContent = CITY_ICONS[d.city] + ' ' + CITY_NAMES[d.city];
-  
-  const reservations = state.reservations.filter(r => r.date === date);
-  const expenses = state.expenses.filter(e => e.date === date);
-  const totalExp = expenses.reduce((s, e) => s + (parseFloat(e.amount) || 0), 0);
-  const note = state.notes[date] || '';
-  
-  let html = `
-    <div class="day-section-card">
-      <div class="day-section-label">Plan del día</div>
-      <div class="day-section-text">${d.summary}</div>
-      ${d.mapsQuery ? `<a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(d.mapsQuery)}" target="_blank" class="maps-button">📍 Abrir en Maps</a>` : ''}
-    </div>
-    <div class="day-section-card">
-      <div class="day-section-label">Alojamiento</div>
-      <div class="day-section-text">🛏️ ${d.sleeping}</div>
-    </div>
-  `;
-  
-  if (d.work) {
-    html += '<div class="day-section-card" style="background:linear-gradient(135deg,var(--almond),var(--parchment-dark));"><div class="day-section-label">Trabajo</div><div class="day-section-text">14-23 hs italianas (9-18 hs Argentina). Mañana libre 8-13.</div></div>';
-  }
-  
-  if (!FOLLOWING_MODE) {
-    if (reservations.length > 0) {
-      html += '<div class="day-section-card"><div class="day-section-label">Reservas de este día</div>';
-      reservations.forEach(r => {
-        html += `<div style="padding:8px 0;border-bottom:1px solid var(--parchment-dark);font-size:13px;"><strong>${r.type}: </strong>${r.name}</div>`;
-      });
-      html += '</div>';
-    }
-    
-    if (expenses.length > 0) {
-      html += '<div class="day-section-card"><div class="day-section-label">Gastos</div>';
-      expenses.forEach(e => {
-        html += `<div class="day-budget-row"><span>${e.description || e.category}</span><span>${parseFloat(e.amount).toFixed(2)} EU</span></div>`;
-      });
-      html += `<div class="day-budget-row total"><span>Total</span><span>${totalExp.toFixed(2)} EU</span></div></div>`;
-    }
-    
-    html += `
-      <div class="day-section-card">
-        <div class="day-section-label">Notas</div>
-        <textarea class="notes-textarea" id="dayNote" placeholder="Algo que quieras recordar...">${note}</textarea>
-        <button class="btn btn-primary" style="margin-top:10px;width:auto;padding:10px 20px;flex:none;" onclick="saveNote('${date}')">Guardar</button>
-      </div>
-    `;
-  }
-  
-  // Day navigation
-  const idx = DAYS.findIndex(x => x.date === date);
-  const prev = idx > 0 ? DAYS[idx-1] : null;
-  const next = idx < DAYS.length - 1 ? DAYS[idx+1] : null;
-  
-  html += '<div class="day-nav">';
-  if (prev) {
-    html += `<button class="day-nav-btn" onclick="openDayDetail('${prev.date}')"><span class="day-nav-btn-arrow">←</span><div><div style="font-size:10px;opacity:0.6;">Anterior</div><div>${formatDate(prev.date, 'short')}</div></div></button>`;
-  } else {
-    html += '<div style="flex:1;"></div>';
-  }
-  if (next) {
-    html += `<button class="day-nav-btn next" onclick="openDayDetail('${next.date}')"><div style="text-align:right;"><div style="font-size:10px;opacity:0.6;">Siguiente</div><div>${formatDate(next.date, 'short')}</div></div><span class="day-nav-btn-arrow">→</span></button>`;
-  } else {
-    html += '<div style="flex:1;"></div>';
-  }
-  html += '</div>';
-  
-  document.getElementById('ddBody').innerHTML = html;
-  document.getElementById('dayDetail').classList.add('active');
-  document.getElementById('dayDetail').scrollTo(0, 0);
-}
-
-function saveNote(date) {
-  state.notes[date] = document.getElementById('dayNote').value;
-  saveState();
-  showToast('Nota guardada');
-}
-
-function closeDayDetail() {
-  document.getElementById('dayDetail').classList.remove('active');
-}
-
-// ============= CHECKLIST =============
-function renderChecklist() {
-  const cont = document.getElementById('checklistContainer');
-  let html = '';
-  
-  for (let p = 1; p <= 5; p++) {
-    const items = CHECKLIST_ITEMS.filter(i => i.priority === p);
-    if (items.length === 0) continue;
-    const done = items.filter(i => state.checklist[i.id]).length;
-    const meta = PRIORITY_LABELS[p];
-    
-    html += `
-      <div class="checklist-section ${meta.class}">
-        <div class="checklist-section-header">
-          <span>${meta.name}</span>
-          <span class="checklist-counter">${done}/${items.length}</span>
-        </div>
-        ${items.map(i => `
-          <div class="checklist-item ${state.checklist[i.id] ? 'done' : ''}">
-            <div class="checkbox ${state.checklist[i.id] ? 'checked' : ''}" onclick="toggleChecklist('${i.id}')"></div>
-            <div class="item-content" onclick="toggleChecklist('${i.id}')">
-              <div class="item-name">${i.text}</div>
-              <div class="item-meta">${i.dateUse} · ${i.estimate}</div>
-              ${state.checklist[i.id] && state.checklist[i.id].actualCost ? `<div class="item-actual">Pagué: ${state.checklist[i.id].actualCost} EU${state.checklist[i.id].voucher ? ' · ' + state.checklist[i.id].voucher : ''}</div>` : ''}
-              ${i.notes ? `<div class="item-meta" style="font-style:italic;margin-top:3px">${i.notes}</div>` : ''}
-            </div>
-            <button class="item-edit" onclick="editChecklist('${i.id}')">✏️</button>
-          </div>
-        `).join('')}
-      </div>
-    `;
-  }
-  cont.innerHTML = html;
-}
-
-function toggleChecklist(id) {
-  if (state.checklist[id]) {
-    delete state.checklist[id];
-    showToast('Desmarcado');
-  } else {
-    state.checklist[id] = { done: true, doneAt: new Date().toISOString() };
-    showToast('Listo ✓');
-  }
-  saveState();
-  renderChecklist();
-  renderToday();
-}
-
-function editChecklist(id) {
-  const item = CHECKLIST_ITEMS.find(i => i.id === id);
-  const data = state.checklist[id] || {};
-  showEditModal({
-    title: item.text,
-    subtitle: 'Cargá los datos reales una vez comprado',
-    fields: [
-      { label: 'Costo real (EU)', name: 'actualCost', type: 'number', value: data.actualCost || '' },
-      { label: 'Código de reserva / voucher', name: 'voucher', type: 'text', value: data.voucher || '' },
-      { label: 'Link al voucher (opcional)', name: 'link', type: 'text', value: data.link || '' },
-      { label: 'Notas', name: 'extraNotes', type: 'textarea', value: data.extraNotes || '' },
-    ],
-    onSave: (vals) => {
-      state.checklist[id] = { ...state.checklist[id], done: true, ...vals };
-      saveState();
-      renderChecklist();
-      renderToday();
-      renderBudget();
-      renderReservations();
-      showToast('Guardado');
-    }
-  });
-}
-
-// ============= BUDGET =============
-function renderBudget() {
-  const totalExpenses = state.expenses.reduce((s, e) => s + (parseFloat(e.amount) || 0), 0);
-  const totalChecklistActual = Object.values(state.checklist).reduce((s, c) => s + (parseFloat(c.actualCost) || 0), 0);
-  const totalSpent = totalExpenses + totalChecklistActual;
-  const budgetEstimate = 3300;
-  const pct = Math.min(100, (totalSpent / budgetEstimate) * 100);
-  
-  document.getElementById('budgetSummary').innerHTML = `
-    <div class="budget-row"><span>Presupuesto estimado</span><span>${budgetEstimate.toFixed(0)} EU</span></div>
-    <div class="budget-row"><span>Compras pre-viaje</span><span>${totalChecklistActual.toFixed(2)} EU</span></div>
-    <div class="budget-row"><span>Gastos en viaje</span><span>${totalExpenses.toFixed(2)} EU</span></div>
-    <div class="budget-row big"><span>Total</span><span>${totalSpent.toFixed(2)} EU</span></div>
-    <div class="budget-bar">
-      <div class="budget-bar-fill ${totalSpent > budgetEstimate ? 'over' : ''}" style="width:${pct}%"></div>
-    </div>
-    <div style="font-size:10px;opacity:0.6;margin-top:8px;text-align:right;font-weight:500;">${pct.toFixed(0)}% del presupuesto</div>
-  `;
-  
-  const catTotals = {};
-  EXPENSE_CATEGORIES.forEach(c => catTotals[c.id] = 0);
-  state.expenses.forEach(e => {
-    if (catTotals[e.category] !== undefined) catTotals[e.category] += parseFloat(e.amount) || 0;
-  });
-  
-  CHECKLIST_ITEMS.forEach(i => {
-    const data = state.checklist[i.id];
-    if (data && data.actualCost) {
-      const cost = parseFloat(data.actualCost) || 0;
-      const text = i.text.toLowerCase();
-      if (text.includes('vuelo') || text.includes('tren') || text.includes('bus') || text.includes('frecciarossa') || text.includes('avant') || text.includes('malpensa')) {
-        catTotals.transporte += cost;
-      } else if (text.includes('alojamiento') || text.includes('b&b') || text.includes('sasso')) {
-        catTotals.alojamiento += cost;
-      } else if (text.includes('cena') || text.includes('cripta')) {
-        catTotals.entradas += cost;
-      } else {
-        catTotals.otros += cost;
-      }
-    }
-  });
-  
-  const maxCat = Math.max(...Object.values(catTotals), 1);
-  document.getElementById('categoryBars').innerHTML = EXPENSE_CATEGORIES.map(c => `
-    <div class="cat-bar">
-      <div class="cat-bar-header">
-        <span>${c.name}</span>
-        <span style="font-weight:500;">${catTotals[c.id].toFixed(0)} EU</span>
-      </div>
-      <div class="cat-bar-track">
-        <div class="cat-bar-fill" style="width:${(catTotals[c.id]/maxCat)*100}%;background:${c.color}"></div>
-      </div>
-    </div>
-  `).join('');
-  
-  const exList = document.getElementById('expensesList');
-  document.getElementById('expensesCount').textContent = state.expenses.length > 0 ? `${state.expenses.length} ${state.expenses.length === 1 ? 'gasto' : 'gastos'}` : '';
-  
-  if (state.expenses.length === 0) {
-    exList.innerHTML = '<div class="empty-state"><div class="empty-state-icon">💸</div><div class="empty-state-text">Aún no cargaste gastos.<br>Tocá el botón <strong>+</strong> abajo a la derecha para uno rápido.</div></div>';
-  } else {
-    const sorted = [...state.expenses].sort((a, b) => b.date.localeCompare(a.date));
-    exList.innerHTML = sorted.map((e) => {
-      const cat = EXPENSE_CATEGORIES.find(c => c.id === e.category) || { name: e.category };
-      return `
-        <div class="expense-item">
-          ${e.photo ? `<img src="${e.photo}" class="expense-photo" alt="">` : ''}
-          <div class="expense-info">
-            <div class="expense-cat">${cat.name}</div>
-            <div class="expense-desc">${e.description || '-'}</div>
-            <div class="expense-date">${formatDate(e.date)}</div>
-          </div>
-          <div class="expense-amount">${parseFloat(e.amount).toFixed(2)} EU</div>
-          <button class="expense-delete" onclick="deleteExpense(${state.expenses.indexOf(e)})">×</button>
-        </div>
-      `;
-    }).join('');
-  }
-}
-
-function openAddExpense() {
-  showEditModal({
-    title: 'Nuevo gasto',
-    subtitle: 'Cargá un gasto del viaje',
-    fields: [
-      { label: 'Monto (EU)', name: 'amount', type: 'number', value: '' },
-      { label: 'Categoría', name: 'category', type: 'select', options: EXPENSE_CATEGORIES.map(c => ({ value: c.id, label: c.name })), value: 'comida' },
-      { label: 'Descripción', name: 'description', type: 'text', value: '' },
-      { label: 'Fecha', name: 'date', type: 'date', value: getToday() },
-      { label: 'Foto del comprobante (opcional)', name: 'photo', type: 'photo', value: '' },
-    ],
-    onSave: (vals) => {
-      if (!vals.amount) return;
-      state.expenses.push({ ...vals, addedAt: new Date().toISOString() });
-      saveState();
-      renderBudget();
-      showToast('Gasto guardado');
-    }
-  });
-}
-
-function quickExpense() {
-  showEditModal({
-    title: 'Gasto rápido',
-    subtitle: 'Solo lo esencial',
-    fields: [
-      { label: 'Monto (EU)', name: 'amount', type: 'number', value: '', autofocus: true },
-      { label: 'Categoría', name: 'category', type: 'select', options: EXPENSE_CATEGORIES.map(c => ({ value: c.id, label: c.name })), value: 'comida' },
-      { label: 'Qué fue (opcional)', name: 'description', type: 'text', value: '' },
-    ],
-    onSave: (vals) => {
-      if (!vals.amount) return;
-      state.expenses.push({ ...vals, date: getToday(), addedAt: new Date().toISOString() });
-      saveState();
-      renderBudget();
-      showToast('Gasto agregado');
-    }
-  });
-}
-
-function deleteExpense(idx) {
-  if (confirm('¿Eliminar este gasto?')) {
-    state.expenses.splice(idx, 1);
-    saveState();
-    renderBudget();
-    showToast('Eliminado');
-  }
-}
-
-function updateRate() {
-  const v = parseFloat(document.getElementById('rateInput').value);
-  if (v > 0) {
-    state.exchangeRate = v;
-    saveState();
-    convertFromEUR();
-  }
-}
-function convertFromARS() {
-  const ars = parseFloat(document.getElementById('arsInput').value);
-  if (!isNaN(ars)) document.getElementById('eurInput').value = (ars / state.exchangeRate).toFixed(2);
-}
-function convertFromEUR() {
-  const eur = parseFloat(document.getElementById('eurInput').value);
-  if (!isNaN(eur)) document.getElementById('arsInput').value = (eur * state.exchangeRate).toFixed(0);
-}
-
-// ============= RESERVATIONS =============
-function renderReservations() {
-  const cont = document.getElementById('reservationsList');
-  
-  // Auto-generated reservations from checklist with voucher
-  const autoRes = CHECKLIST_ITEMS
-    .filter(i => state.checklist[i.id] && (state.checklist[i.id].voucher || state.checklist[i.id].actualCost))
-    .map(i => ({
-      auto: true,
-      type: i.text.toLowerCase().includes('vuelo') ? 'Vuelo' : i.text.toLowerCase().includes('tren') ? 'Tren' : i.text.toLowerCase().includes('bus') ? 'Bus' : i.text.toLowerCase().includes('alojamiento') || i.text.toLowerCase().includes('sasso') || i.text.toLowerCase().includes('b&b') ? 'Alojamiento' : 'Otro',
-      name: i.text,
-      date: '',
-      bookingCode: state.checklist[i.id].voucher || '',
-      cost: state.checklist[i.id].actualCost || '',
-      link: state.checklist[i.id].link || '',
-      notes: state.checklist[i.id].extraNotes || i.dateUse,
-    }));
-  
-  const allRes = [...autoRes, ...state.reservations];
-  
-  if (allRes.length === 0) {
-    cont.innerHTML = '<div class="empty-state"><div class="empty-state-icon">🎫</div><div class="empty-state-text">Aún no hay reservas.<br>Cuando marques compras como hechas en el checklist, aparecerán acá.</div></div>';
-    return;
-  }
-  
-  cont.innerHTML = allRes.map((r, idx) => `
-    <div class="reservation-card">
-      <div class="reservation-type">${r.type}${r.auto ? ' · auto' : ''}</div>
-      <div class="reservation-name">${r.name}</div>
-      <div class="reservation-detail">
-        ${r.date ? '📅 ' + formatDate(r.date) + '<br>' : ''}
-        ${r.bookingCode ? '🔖 ' + r.bookingCode + '<br>' : ''}
-        ${r.cost ? '💰 ' + r.cost + ' EU<br>' : ''}
-        ${r.notes ? '📝 ' + r.notes : ''}
-      </div>
-      <div class="reservation-actions">
-        ${r.link ? '<a href="' + r.link + '" target="_blank" class="reservation-btn">🔗 Voucher</a>' : ''}
-        ${!r.auto ? `<button class="reservation-btn" onclick="editReservation(${state.reservations.findIndex(x => x === r)})">✏️ Editar</button>` : ''}
-        ${!r.auto ? `<button class="reservation-btn" onclick="deleteReservation(${state.reservations.findIndex(x => x === r)})">🗑 Borrar</button>` : ''}
-      </div>
-    </div>
-  `).join('');
-}
-
-function openAddReservation() {
-  showEditModal({
-    title: 'Nueva reserva',
-    subtitle: 'Vuelo, tren, hotel, lo que sea',
-    fields: [
-      { label: 'Tipo', name: 'type', type: 'select', options: [
-        { value: 'Vuelo', label: 'Vuelo' }, { value: 'Tren', label: 'Tren' }, { value: 'Bus', label: 'Bus' }, { value: 'Alojamiento', label: 'Alojamiento' }, { value: 'Otro', label: 'Otro' },
-      ], value: 'Vuelo' },
-      { label: 'Nombre / descripción', name: 'name', type: 'text', value: '' },
-      { label: 'Fecha', name: 'date', type: 'date', value: '' },
-      { label: 'Código de reserva', name: 'bookingCode', type: 'text', value: '' },
-      { label: 'Costo (EU)', name: 'cost', type: 'number', value: '' },
-      { label: 'Link al voucher', name: 'link', type: 'text', value: '' },
-      { label: 'Notas', name: 'notes', type: 'textarea', value: '' },
-    ],
-    onSave: (vals) => {
-      if (!vals.name) return;
-      state.reservations.push({ ...vals, addedAt: new Date().toISOString() });
-      saveState();
-      renderReservations();
-      showToast('Reserva guardada');
-    }
-  });
-}
-
-function editReservation(idx) {
-  if (idx < 0) return;
-  const r = state.reservations[idx];
-  showEditModal({
-    title: 'Editar reserva',
-    subtitle: r.type,
-    fields: [
-      { label: 'Tipo', name: 'type', type: 'select', options: [
-        { value: 'Vuelo', label: 'Vuelo' }, { value: 'Tren', label: 'Tren' }, { value: 'Bus', label: 'Bus' }, { value: 'Alojamiento', label: 'Alojamiento' }, { value: 'Otro', label: 'Otro' }
-      ], value: r.type },
-      { label: 'Nombre', name: 'name', type: 'text', value: r.name },
-      { label: 'Fecha', name: 'date', type: 'date', value: r.date || '' },
-      { label: 'Código de reserva', name: 'bookingCode', type: 'text', value: r.bookingCode || '' },
-      { label: 'Costo (EU)', name: 'cost', type: 'number', value: r.cost || '' },
-      { label: 'Link al voucher', name: 'link', type: 'text', value: r.link || '' },
-      { label: 'Notas', name: 'notes', type: 'textarea', value: r.notes || '' },
-    ],
-    onSave: (vals) => {
-      state.reservations[idx] = { ...r, ...vals };
-      saveState();
-      renderReservations();
-      showToast('Actualizada');
-    }
-  });
-}
-
-function deleteReservation(idx) {
-  if (idx < 0) return;
-  if (confirm('¿Borrar esta reserva?')) {
-    state.reservations.splice(idx, 1);
-    saveState();
-    renderReservations();
-  }
-}
-
-// ============= EDIT MODAL =============
-function showEditModal({ title, subtitle, fields, onSave }) {
-  let html = '<div class="edit-handle"></div>';
-  html += '<div class="edit-title">' + title + '</div>';
-  if (subtitle) html += '<div class="edit-subtitle">' + subtitle + '</div>';
-  
-  fields.forEach(f => {
-    html += '<div class="edit-field"><label class="edit-label">' + f.label + '</label>';
-    if (f.type === 'textarea') {
-      html += '<textarea class="edit-input edit-textarea" name="' + f.name + '">' + (f.value || '') + '</textarea>';
-    } else if (f.type === 'select') {
-      html += '<select class="edit-input" name="' + f.name + '">';
-      f.options.forEach(o => {
-        html += '<option value="' + o.value + '"' + (o.value === f.value ? ' selected' : '') + '>' + o.label + '</option>';
-      });
-      html += '</select>';
-    } else if (f.type === 'photo') {
-      const hasPhoto = f.value;
-      html += `
-        <input type="hidden" name="${f.name}" value="${f.value || ''}" id="photo-${f.name}">
-        <label class="photo-button" for="photoinput-${f.name}">📷 ${hasPhoto ? 'Cambiar foto' : 'Sacar foto'}</label>
-        <input type="file" id="photoinput-${f.name}" accept="image/*" capture="environment" class="photo-input" onchange="handlePhoto(event, '${f.name}')">
-        <div id="photopreview-${f.name}">${hasPhoto ? `<img src="${hasPhoto}" class="photo-preview">` : ''}</div>
-      `;
-    } else {
-      html += '<input class="edit-input" type="' + f.type + '" name="' + f.name + '" value="' + (f.value || '') + '"' + (f.autofocus ? ' autofocus' : '') + '>';
-    }
-    html += '</div>';
-  });
-  
-  html += '<div class="edit-buttons"><button class="btn btn-secondary" onclick="closeEditModal()">Cancelar</button><button class="btn btn-primary" onclick="saveEditModal()">Guardar</button></div>';
-  
-  document.getElementById('editContent').innerHTML = html;
-  document.getElementById('editModal').classList.add('active');
-  window._editOnSave = onSave;
-  window._editFields = fields;
-  
-  // Autofocus first input
-  setTimeout(() => {
-    const auto = document.querySelector('#editContent [autofocus]');
-    if (auto) auto.focus();
-  }, 100);
-}
-
-function handlePhoto(event, name) {
-  const file = event.target.files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = (e) => {
-    // Resize photo to max 800px
-    const img = new Image();
-    img.onload = () => {
-      const canvas = document.createElement('canvas');
-      const maxSize = 800;
-      let w = img.width, h = img.height;
-      if (w > h && w > maxSize) { h = h * maxSize / w; w = maxSize; }
-      else if (h > maxSize) { w = w * maxSize / h; h = maxSize; }
-      canvas.width = w;
-      canvas.height = h;
-      const ctx = canvas.getContext('2d');
-      ctx.drawImage(img, 0, 0, w, h);
-      const dataUrl = canvas.toDataURL('image/jpeg', 0.7);
-      document.getElementById('photo-' + name).value = dataUrl;
-      document.getElementById('photopreview-' + name).innerHTML = `<img src="${dataUrl}" class="photo-preview">`;
-    };
-    img.src = e.target.result;
-  };
-  reader.readAsDataURL(file);
-}
-
-function saveEditModal() {
-  const vals = {};
-  window._editFields.forEach(f => {
-    const el = document.querySelector('#editContent [name="' + f.name + '"]');
-    if (el) vals[f.name] = el.value;
-  });
-  window._editOnSave(vals);
-  closeEditModal();
-}
-
-function closeEditModal() {
-  document.getElementById('editModal').classList.remove('active');
-}
-
-// ============= SEARCH =============
-function openSearch() {
-  document.getElementById('searchModal').classList.add('active');
-  setTimeout(() => document.getElementById('searchInput').focus(), 200);
-}
-
-function closeSearch() {
-  document.getElementById('searchModal').classList.remove('active');
-  document.getElementById('searchInput').value = '';
-  document.getElementById('searchResults').innerHTML = '';
-}
-
-function performSearch(q) {
-  q = q.toLowerCase().trim();
-  if (q.length < 2) {
-    document.getElementById('searchResults').innerHTML = '';
-    return;
-  }
-  const results = [];
-  DAYS.forEach(d => {
-    if (d.place.toLowerCase().includes(q) || d.summary.toLowerCase().includes(q)) {
-      results.push({ type: 'Día', title: formatDate(d.date) + ' · ' + d.place, meta: d.summary.substring(0, 60) + '…', action: () => { closeSearch(); openDayDetail(d.date); } });
-    }
-  });
-  CHECKLIST_ITEMS.forEach(i => {
-    if (i.text.toLowerCase().includes(q) || (i.notes && i.notes.toLowerCase().includes(q))) {
-      results.push({ type: 'Compra', title: i.text, meta: i.dateUse + ' · ' + i.estimate, action: () => { closeSearch(); switchTab('checklist'); } });
-    }
-  });
-  state.reservations.forEach(r => {
-    if (r.name.toLowerCase().includes(q) || (r.notes && r.notes.toLowerCase().includes(q))) {
-      results.push({ type: 'Reserva', title: r.name, meta: r.type + ' · ' + (r.date || 'sin fecha'), action: () => { closeSearch(); switchTab('reservations'); } });
-    }
-  });
-  
-  const cont = document.getElementById('searchResults');
-  if (results.length === 0) {
-    cont.innerHTML = '<div style="padding:30px;text-align:center;color:var(--grape);font-size:13px;">Sin resultados para "' + q + '"</div>';
-  } else {
-    cont.innerHTML = results.map((r, idx) => `
-      <div class="search-result" onclick="window._searchActions[${idx}]()">
-        <div class="search-result-title">${r.title}</div>
-        <div class="search-result-meta">${r.type} · ${r.meta}</div>
-      </div>
-    `).join('');
-    window._searchActions = results.map(r => r.action);
-  }
-}
-
-function openMaps(query) {
-  window.open('https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(query), '_blank');
-}
-
-// ============= MENU =============
-function openMenu() { document.getElementById('menuModal').classList.add('active'); }
-function closeMenu() { document.getElementById('menuModal').classList.remove('active'); }
-
-function exportData() {
-  const data = JSON.stringify(state, null, 2);
-  const blob = new Blob([data], { type: 'application/json' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = 'viaje-2026-backup-' + getToday() + '.json';
-  a.click();
-  URL.revokeObjectURL(url);
-  closeMenu();
-  showToast('Backup descargado');
-}
-
-function importData(event) {
-  const file = event.target.files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = (e) => {
-    try {
-      const imported = JSON.parse(e.target.result);
-      if (confirm('¿Importar estos datos? Va a reemplazar todo lo que tengas ahora.')) {
-        state = { ...state, ...imported };
-        saveState();
-        renderToday();
-        renderCalendar();
-        renderChecklist();
-        renderBudget();
-        renderReservations();
-        document.getElementById('rateInput').value = state.exchangeRate;
-        closeMenu();
-        showToast('Datos importados');
-      }
-    } catch (err) {
-      alert('Error al importar: el archivo no es válido');
-    }
-  };
-  reader.readAsText(file);
-}
-
-function emailBackup() {
-  const data = JSON.stringify(state, null, 2);
-  const subject = 'Backup viaje 2026 - ' + getToday();
-  const body = 'Backup automático del viaje.\n\n--- DATOS ---\n\n' + data;
-  // Email body is limited, advise download instead
-  if (data.length > 1500) {
-    alert('Los datos son muy grandes para mandar por email directo. Te descargo el archivo y vos lo adjuntás al mail.');
-    exportData();
-  } else {
-    window.location.href = 'mailto:?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
-  }
-  closeMenu();
-}
-
-function shareFollowing() {
-  const url = window.location.origin + window.location.pathname + '?modo=siguiendo';
-  if (navigator.share) {
-    navigator.share({
-      title: 'Viaje de Jesi',
-      text: 'Seguí mi viaje por Italia y Andalucía',
-      url: url
-    }).catch(() => copyToClipboard(url));
-  } else {
-    copyToClipboard(url);
-  }
-  closeMenu();
-}
-
-function copyToClipboard(text) {
-  navigator.clipboard.writeText(text).then(() => {
-    showToast('Link copiado');
-  }).catch(() => {
-    prompt('Copiá este link:', text);
-  });
-}
-
-function copyTodayPlan() {
-  const today = getToday();
-  const tripDay = DAYS.find(d => d.date === today);
-  let text;
-  if (tripDay) {
-    text = `Hoy ${formatDate(today, 'long')}:\n${tripDay.place}\n\n${tripDay.summary}\n\n🛏️ ${tripDay.sleeping}`;
-  } else {
-    const days = daysBetween(today, TRIP.startDate);
-    text = days > 0 ? `Faltan ${days} días para el viaje a Italia ✈️` : 'Viaje terminado, ya estoy de vuelta';
-  }
-  copyToClipboard(text);
-  closeMenu();
-}
-
-function installPWA() {
-  if (window._installPrompt) {
-    window._installPrompt.prompt();
-  } else {
-    alert('Para instalar en el celu:\n\niPhone: Tocá el ícono compartir → "Agregar a pantalla de inicio"\n\nAndroid: Menú del navegador → "Instalar app" o "Agregar a pantalla"');
-  }
-  closeMenu();
-}
-
-function resetData() {
-  if (confirm('¿Borrar gastos, notas, reservas? El plan del viaje queda igual.')) {
-    state = { checklist: {}, expenses: [], reservations: [], exchangeRate: 1100, notes: {} };
-    saveState();
-    renderToday();
-    renderCalendar();
-    renderChecklist();
-    renderBudget();
-    renderReservations();
-    document.getElementById('rateInput').value = 1100;
-    closeMenu();
-    showToast('Datos reiniciados');
-  }
-}
-
-// ============= TABS =============
-function switchTab(tab) {
-  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-  document.getElementById('tab-' + tab).classList.add('active');
-  document.querySelector('.nav-btn[data-tab="' + tab + '"]').classList.add('active');
-  
-  // Hide FAB except on budget
-  const fab = document.getElementById('fab');
-  if (tab === 'budget') fab.classList.remove('hidden');
-  else fab.classList.add('hidden');
-  
-  if (tab === 'home') renderToday();
-  if (tab === 'calendar') renderCalendar();
-  if (tab === 'checklist') renderChecklist();
-  if (tab === 'budget') renderBudget();
-  if (tab === 'reservations') renderReservations();
-  
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-}
-
-// ============= INIT =============
-loadState();
-document.getElementById('rateInput').value = state.exchangeRate;
-renderToday();
-
-// Hide FAB initially (only show on budget)
-document.getElementById('fab').classList.add('hidden');
-
-// Modal close on backdrop
-['editModal', 'searchModal', 'menuModal'].forEach(id => {
-  document.getElementById(id).addEventListener('click', (e) => {
-    if (e.target.id === id) {
-      if (id === 'editModal') closeEditModal();
-      if (id === 'searchModal') closeSearch();
-      if (id === 'menuModal') closeMenu();
-    }
-  });
-});
-
-// PWA install prompt
-window.addEventListener('beforeinstallprompt', (e) => {
-  e.preventDefault();
-  window._installPrompt = e;
-});
-
-// Service Worker registration (only works on http/https, not file://)
-if ('serviceWorker' in navigator && (location.protocol === 'http:' || location.protocol === 'https:')) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./sw.js').catch(() => {
-      // Silenciosamente falla si no encuentra sw.js. La app funciona igual.
-    });
-  });
-}
-</script>
+<script src="./app.js"></script>
 </body>
 </html>

@@ -1,64 +1,59 @@
 // Service Worker - Viaje 2026
-// Sirve la app desde caché para funcionamiento offline.
+// Versión: incrementar cuando se actualice la app para forzar refresh
+const VERSION = 'v2.0.0';
+const CACHE_NAME = 'viaje2026-' + VERSION;
+const URLS_TO_CACHE = ['./', './index.html'];
 
-const CACHE_NAME = 'viaje2026-v1';
-const URLS_TO_CACHE = [
-  './',
-  './index.html'
-];
-
-// Instalación: cachear archivos esenciales
 self.addEventListener('install', (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(URLS_TO_CACHE);
-    })
+    caches.open(CACHE_NAME).then((cache) => cache.addAll(URLS_TO_CACHE))
   );
   self.skipWaiting();
 });
 
-// Activación: limpiar cachés viejos
 self.addEventListener('activate', (event) => {
   event.waitUntil(
-    caches.keys().then((cacheNames) => {
+    caches.keys().then((names) => {
       return Promise.all(
-        cacheNames
-          .filter((name) => name !== CACHE_NAME)
-          .map((name) => caches.delete(name))
+        names.filter((n) => n !== CACHE_NAME).map((n) => caches.delete(n))
       );
-    })
+    }).then(() => self.clients.claim())
   );
-  self.clients.claim();
 });
 
-// Fetch: cache-first strategy con fallback a red
+// Network-first strategy para HTML, cache-first para assets
 self.addEventListener('fetch', (event) => {
-  // Solo manejar GET requests
   if (event.request.method !== 'GET') return;
 
-  event.respondWith(
-    caches.match(event.request).then((cached) => {
-      if (cached) return cached;
+  const isHTML = event.request.mode === 'navigate' || 
+                 event.request.headers.get('accept')?.includes('text/html');
 
-      return fetch(event.request).then((response) => {
-        // Solo cachear respuestas válidas
-        if (!response || response.status !== 200 || response.type === 'opaque') {
-          return response;
-        }
-
-        // Cachear copia para próxima vez
-        const responseClone = response.clone();
-        caches.open(CACHE_NAME).then((cache) => {
-          cache.put(event.request, responseClone);
-        });
-
+  if (isHTML) {
+    // Para HTML: red primero, caché si falla. Así siempre ven la última versión.
+    event.respondWith(
+      fetch(event.request).then((response) => {
+        const clone = response.clone();
+        caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
         return response;
-      }).catch(() => {
-        // Si falla la red, devolver index como fallback (para SPA)
-        if (event.request.mode === 'navigate') {
-          return caches.match('./index.html');
-        }
-      });
-    })
-  );
+      }).catch(() => caches.match(event.request).then((c) => c || caches.match('./index.html')))
+    );
+  } else {
+    // Para assets: caché primero
+    event.respondWith(
+      caches.match(event.request).then((cached) => {
+        return cached || fetch(event.request).then((response) => {
+          if (response && response.status === 200 && response.type !== 'opaque') {
+            const clone = response.clone();
+            caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
+          }
+          return response;
+        });
+      })
+    );
+  }
+});
+
+// Recibir mensaje del cliente para forzar update
+self.addEventListener('message', (event) => {
+  if (event.data === 'SKIP_WAITING') self.skipWaiting();
 });
