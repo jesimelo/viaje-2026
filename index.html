@@ -1018,7 +1018,7 @@ input, textarea, select { font-family: inherit; }
 </header>
 
 <div id="followingBanner" class="following-banner" style="display:none;">
-  <strong>👋 Siguiendo el viaje</strong> · de Juana en su viaje
+  <strong>👋 Siguiendo el viaje</strong> · de Jesi
 </div>
 
 <div class="search-modal" id="searchModal">
@@ -1213,7 +1213,7 @@ if (FOLLOWING_MODE) {
 }
 
 // ============= DATA =============
-const TRIP = { startDate: '2026-05-18', endDate: '2026-06-22', name: 'Juana' };
+const TRIP = { startDate: '2026-05-18', endDate: '2026-06-22', name: 'Jesi' };
 
 const DAYS = [
   { date: '2026-05-18', day: 'Lun', city: 'travel', place: 'Vuelo Argentina → Milán', summary: 'Día completo en el aire. Tip: melatonina, hidratarse, dormir lo que puedas.', sleeping: 'Avión', work: false, mapsQuery: '' },
@@ -2118,7 +2118,7 @@ function shareFollowing() {
   const url = window.location.origin + window.location.pathname + '?modo=siguiendo';
   if (navigator.share) {
     navigator.share({
-      title: 'Viaje de Juana',
+      title: 'Viaje de Jesi',
       text: 'Seguí mi viaje por Italia y Andalucía',
       url: url
     }).catch(() => copyToClipboard(url));
