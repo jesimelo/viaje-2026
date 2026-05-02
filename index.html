@@ -1167,6 +1167,115 @@ textarea, select { font-size: 16px !important; }
   flex-shrink: 0;
 }
 
+/* SUMMARY VIEW */
+.summary-month {
+  margin-bottom: 28px;
+}
+.summary-month-title {
+  font-family: 'Fraunces', Georgia, serif;
+  font-size: 22px;
+  font-weight: 500;
+  color: var(--space);
+  text-align: center;
+  margin: 6px 0 18px;
+  letter-spacing: -0.01em;
+}
+.summary-event {
+  display: flex;
+  gap: 14px;
+  padding: 14px 16px;
+  background: var(--cream);
+  border: 1px solid var(--parchment-dark);
+  border-radius: var(--radius-md);
+  margin-bottom: 8px;
+  cursor: pointer;
+  transition: var(--t-fast);
+  align-items: flex-start;
+}
+.summary-event:hover { border-color: var(--space); transform: translateX(2px); }
+.summary-event:active { transform: scale(0.99); }
+.summary-event.today {
+  background: var(--space);
+  color: var(--parchment);
+  border-color: var(--space);
+}
+.summary-event.today .summary-event-date,
+.summary-event.today .summary-event-detail { color: rgba(242,233,228,0.78); }
+.summary-event.past { opacity: 0.5; }
+
+.summary-event-icon {
+  flex-shrink: 0;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: var(--parchment);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  border: 1px solid var(--parchment-dark);
+}
+.summary-event.today .summary-event-icon {
+  background: var(--almond);
+  border-color: var(--almond);
+}
+.summary-event-content { flex: 1; min-width: 0; }
+.summary-event-date {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--grape);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.summary-event-title {
+  font-weight: 600;
+  font-size: 15px;
+  margin-top: 2px;
+  line-height: 1.3;
+}
+.summary-event-detail {
+  font-size: 12px;
+  color: var(--grape);
+  margin-top: 4px;
+  line-height: 1.4;
+}
+
+.summary-stay {
+  display: flex;
+  gap: 14px;
+  padding: 10px 16px;
+  margin-bottom: 8px;
+  margin-left: 28px;
+  font-size: 12px;
+  color: var(--grape);
+  align-items: center;
+  background: var(--parchment);
+  border-radius: var(--radius-sm);
+  border-left: 3px solid var(--lilac);
+}
+.summary-stay-icon { font-size: 14px; opacity: 0.6; }
+.summary-stay-text { flex: 1; }
+.summary-stay-nights { font-weight: 600; color: var(--space); }
+
+.summary-quiet {
+  display: flex;
+  gap: 14px;
+  padding: 10px 16px;
+  margin-bottom: 12px;
+  font-size: 12px;
+  color: var(--lilac);
+  align-items: center;
+  font-style: italic;
+  text-align: center;
+  justify-content: center;
+}
+.summary-quiet-line {
+  flex: 1;
+  height: 1px;
+  background: var(--parchment-dark);
+  max-width: 60px;
+}
+
 .empty-state { text-align: center; padding: 50px 20px; color: var(--grape); }
 .empty-state-icon { font-size: 44px; margin-bottom: 14px; opacity: 0.4; }
 .empty-state-text { font-size: 13px; line-height: 1.6; }
@@ -1305,7 +1414,7 @@ textarea, select { font-size: 16px !important; }
   <div class="section-title">Itinerario</div>
   <div class="view-toggle">
     <button class="view-toggle-btn active" data-view="list" onclick="switchCalendarView('list')">📋 Lista</button>
-    <button class="view-toggle-btn" data-view="month" onclick="switchCalendarView('month')">📅 Calendario</button>
+    <button class="view-toggle-btn" data-view="month" onclick="switchCalendarView('month')">⚡ Resumen</button>
   </div>
   <div class="day-list" id="dayList"></div>
   <div id="monthGrid" style="display:none;"></div>

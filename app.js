@@ -412,102 +412,229 @@ function renderListView() {
 }
 
 function renderMonthView() {
-  const today = getToday();
-  const cont = document.getElementById('monthGrid');
-  const monthsLong = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
-  const weekdays = ['L','M','M','J','V','S','D']; // empezamos en lunes
-  
-  // Agrupar días por mes
-  const byMonth = {};
+  // En realidad ahora es vista RESUMEN, mantengo el nombre interno por simplicidad
+  renderSummaryView();
+}
+
+// Detecta los eventos importantes del viaje
+function getKeyEvents() {
   const allDays = getAllDays();
-  allDays.forEach(d => {
-    const key = d.date.substring(0, 7);
-    if (!byMonth[key]) byMonth[key] = [];
-    byMonth[key].push(d);
-  });
+  const events = [];
+  let currentSleep = null; // Para detectar cambios de hospedaje
+  let consecutiveQuietStart = null;
+  let consecutiveQuietCount = 0;
   
-  let html = '';
-  
-  Object.keys(byMonth).sort().forEach(monthKey => {
-    const [year, month] = monthKey.split('-').map(Number);
-    const firstDay = new Date(year, month - 1, 1);
-    const lastDay = new Date(year, month, 0).getDate();
+  for (let i = 0; i < allDays.length; i++) {
+    const d = allDays[i];
+    const prevDay = i > 0 ? allDays[i - 1] : null;
+    const nextDay = i < allDays.length - 1 ? allDays[i + 1] : null;
     
-    // Día de la semana del primero (0 = domingo, queremos lunes = 0)
-    let startDow = firstDay.getDay() - 1;
-    if (startDow < 0) startDow = 6;
+    let isImportant = false;
+    let icon = '';
+    let title = '';
+    let detail = '';
     
-    html += `<div class="month-block">
-      <div class="month-title">${monthsLong[month-1]} ${year}</div>
-      <div class="calendar-grid">`;
+    const place = d.place;
+    const lower = place.toLowerCase();
     
-    // Headers de días de la semana
-    weekdays.forEach(w => {
-      html += `<div class="calendar-weekday">${w}</div>`;
-    });
-    
-    // Días vacíos al inicio
-    for (let i = 0; i < startDow; i++) {
-      html += `<div class="calendar-day empty"></div>`;
+    // Detectar eventos por análisis del texto
+    if (lower.includes('vuelo') && (lower.includes('argentina') || lower.includes('milán →') || lower.includes('roma'))) {
+      isImportant = true;
+      icon = '✈️';
+      title = place;
+    } else if (lower.includes('vuelta a argentina')) {
+      isImportant = true;
+      icon = '🏠';
+      title = 'Vuelta a Argentina';
+      detail = 'Malpensa Express → vuelo a casa';
+    } else if (lower.includes('→ málaga') || lower.includes('roma → málaga')) {
+      isImportant = true;
+      icon = '✈️';
+      title = place;
+      detail = 'Vuelo Roma FCO → Málaga AGP';
+    } else if (lower.includes('málaga → bari') || lower.includes('granada → málaga → bari')) {
+      isImportant = true;
+      icon = '✈️';
+      title = place;
+      detail = 'Tren Granada → Málaga + Vuelo Málaga → Bari';
+    } else if (lower.includes('chieti → milán')) {
+      isImportant = true;
+      icon = '🚂';
+      title = place;
+      detail = 'Frecciarossa Pescara → Milán (LADO DERECHO)';
+    } else if (lower.includes('milán → chieti')) {
+      isImportant = true;
+      icon = '🚂';
+      title = place;
+      detail = 'Llegada Malpensa + Frecciarossa + tren regional';
+    } else if (lower.includes('lecce → chieti')) {
+      isImportant = true;
+      icon = '🚂';
+      title = place;
+      detail = 'Tren Lecce → Pescara (~4h30)';
+    } else if (lower.includes('matera → lecce')) {
+      isImportant = true;
+      icon = '🚌';
+      title = place;
+      detail = 'Bus directo Matera → Lecce';
+    } else if (lower.includes('trulli') || lower.includes('alberobello')) {
+      isImportant = true;
+      icon = '🚌';
+      title = place;
+      detail = 'Trulli + Locorotondo + transfer a Matera';
+    } else if (lower.includes('polignano')) {
+      isImportant = true;
+      icon = '🚂';
+      title = place;
+      detail = 'Tren Bari → Polignano + Monopoli';
+    } else if (lower.includes('málaga → granada')) {
+      isImportant = true;
+      icon = '🚂';
+      title = place;
+      detail = 'Tren AVANT Málaga → Granada (1h 10m)';
+    } else if (lower.includes('granada → málaga') && !lower.includes('bari')) {
+      isImportant = true;
+      icon = '🚂';
+      title = place;
+      detail = 'Tren AVANT Granada → Málaga';
+    } else if (lower.includes('córdoba')) {
+      isImportant = true;
+      icon = '🚄';
+      title = place;
+      detail = 'AVE Málaga → Córdoba (Mezquita 11:30)';
+    } else if (lower.includes('ronda')) {
+      isImportant = true;
+      icon = '🚌';
+      title = place;
+      detail = 'Bus Avanza Málaga → Ronda';
+    } else if (lower.includes('sulmona')) {
+      isImportant = true;
+      icon = '🚂';
+      title = place;
+      detail = 'Tren Chieti → Sulmona';
+    } else if (lower.includes('scanno') && !d.date.endsWith('-31')) {
+      isImportant = true;
+      icon = '🚌';
+      title = place;
+      detail = 'Tren + bus a Scanno (B&B)';
+    } else if (d.date === '2026-05-31') {
+      // Vuelta de Scanno
+      isImportant = true;
+      icon = '🚌';
+      title = 'Scanno → Chieti';
+      detail = 'Lago di Scanno (forma de corazón)';
+    } else if (lower.includes('despedida')) {
+      isImportant = true;
+      icon = '👋';
+      title = 'Último día de trabajo en Chieti';
+      detail = 'Despedida con amigos';
+    } else if (lower.includes('milán clásico')) {
+      isImportant = true;
+      icon = '⛪';
+      title = 'Milán a fondo';
+      detail = 'Duomo + Galleria + Brera';
+    } else if (lower.includes('bergamo')) {
+      isImportant = true;
+      icon = '🚂';
+      title = place;
+      detail = 'Tren Milán → Bergamo (50 min)';
+    } else if (lower.includes('lecce full day')) {
+      isImportant = true;
+      icon = '🎨';
+      title = 'Lecce full day';
+      detail = 'Tour barroco + papel maché';
     }
     
-    // Días del mes
-    for (let day = 1; day <= lastDay; day++) {
-      const dateStr = `${year}-${String(month).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
-      const dayData = byMonth[monthKey].find(d => d.date === dateStr);
+    if (isImportant) {
+      // Si veníamos acumulando días tranquilos, agregar nota
+      if (consecutiveQuietCount >= 3 && consecutiveQuietStart) {
+        events.push({
+          type: 'quiet',
+          date: consecutiveQuietStart,
+          dateEnd: prevDay?.date,
+          count: consecutiveQuietCount,
+          place: prevDay?.city === 'chieti' ? 'Chieti' : 'Granada'
+        });
+      }
+      consecutiveQuietCount = 0;
+      consecutiveQuietStart = null;
       
-      if (dayData) {
-        const isToday = dateStr === today;
-        const isPast = dateStr < today;
-        const blockClass = `block-${dayData.city === 'travel' ? 'llegada' : dayData.city}`;
-        const reservations = getReservationsForDate(dateStr);
-        
-        // Ícono de reserva si tiene
-        let icons = '';
-        if (reservations.length > 0) {
-          const types = [...new Set(reservations.map(r => r.type))];
-          if (types.includes('flight')) icons += '✈';
-          else if (types.includes('train')) icons += '🚂';
-          else if (types.includes('bus')) icons += '🚌';
-          else if (types.includes('hotel')) icons += '🛏';
-          else icons += '📌';
-        }
-        
-        // Nombre cortito del lugar
-        let shortPlace = dayData.place
-          .replace('Mi lugar en el mundo 🌹', 'Granada 🌹')
-          .replace(/→/g, '·')
-          .split('·')[0]
-          .trim()
-          .replace('Vuelta a Argentina', 'Vuelta')
-          .replace('Vuelo Argentina', 'Vuelo')
-          .replace('Chieti - despedida', 'Chieti')
-          .replace('Chieti - descanso', 'Chieti');
-        
-        // Truncar si muy largo
-        if (shortPlace.length > 14) shortPlace = shortPlace.substring(0, 13) + '…';
-        
-        html += `<div class="calendar-day in-trip ${blockClass} ${isToday ? 'today' : ''} ${isPast ? 'past' : ''}" onclick="openDayDetail('${dateStr}')">
-          ${icons ? `<div class="calendar-day-icons">${icons}</div>` : ''}
-          <div class="calendar-day-num">${day}</div>
-          <div class="calendar-day-place">${shortPlace}</div>
-        </div>`;
-      } else {
-        html += `<div class="calendar-day empty"></div>`;
+      events.push({
+        type: 'event',
+        date: d.date,
+        day: d.day,
+        icon, title, detail,
+        sleeping: d.sleeping,
+        place: d.place
+      });
+    } else {
+      // Día tranquilo (Chieti trabajando, Granada libre)
+      if (consecutiveQuietStart === null) consecutiveQuietStart = d.date;
+      consecutiveQuietCount++;
+      
+      // Si es el último día y veníamos acumulando
+      if (i === allDays.length - 1 && consecutiveQuietCount >= 3) {
+        events.push({
+          type: 'quiet',
+          date: consecutiveQuietStart,
+          dateEnd: d.date,
+          count: consecutiveQuietCount,
+          place: d.city === 'chieti' ? 'Chieti' : 'Granada'
+        });
       }
     }
+  }
+  
+  return events;
+}
+
+function renderSummaryView() {
+  const today = getToday();
+  const cont = document.getElementById('monthGrid');
+  const events = getKeyEvents();
+  const monthsLong = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+  
+  let html = '';
+  let lastMonth = '';
+  
+  events.forEach(ev => {
+    const monthKey = ev.date.substring(0, 7);
+    const [year, month] = monthKey.split('-').map(Number);
     
-    html += `</div></div>`;
+    if (monthKey !== lastMonth) {
+      if (lastMonth) html += '</div>';
+      html += `<div class="summary-month"><div class="summary-month-title">${monthsLong[month-1]}</div>`;
+      lastMonth = monthKey;
+    }
+    
+    if (ev.type === 'quiet') {
+      // Bloque de días tranquilos
+      const startDay = parseDate(ev.date).getDate();
+      const endDay = parseDate(ev.dateEnd).getDate();
+      const place = ev.place === 'Chieti' ? '💻 Chieti — días de trabajo' : '🌹 Granada — días libres';
+      html += `<div class="summary-quiet">
+        <div class="summary-quiet-line"></div>
+        <span>${place} (${startDay}–${endDay}, ${ev.count} días)</span>
+        <div class="summary-quiet-line"></div>
+      </div>`;
+    } else {
+      // Evento importante
+      const isToday = ev.date === today;
+      const isPast = ev.date < today;
+      const dt = parseDate(ev.date);
+      
+      html += `<div class="summary-event ${isToday ? 'today' : ''} ${isPast ? 'past' : ''}" onclick="openDayDetail('${ev.date}')">
+        <div class="summary-event-icon">${ev.icon}</div>
+        <div class="summary-event-content">
+          <div class="summary-event-date">${dt.getDate()} ${monthsLong[month-1].substring(0,3)} · ${ev.day}</div>
+          <div class="summary-event-title">${ev.title}</div>
+          ${ev.detail ? `<div class="summary-event-detail">${ev.detail}</div>` : ''}
+        </div>
+      </div>`;
+    }
   });
   
-  // Leyenda
-  html += `<div class="calendar-legend">
-    <div class="legend-item"><div class="legend-color block-chieti"></div>Chieti</div>
-    <div class="legend-item"><div class="legend-color block-andalucia"></div>Andalucía</div>
-    <div class="legend-item"><div class="legend-color block-puglia"></div>Puglia</div>
-    <div class="legend-item"><div class="legend-color block-milan"></div>Milán</div>
-    <div class="legend-item"><div class="legend-color block-llegada"></div>Vuelo</div>
-  </div>`;
+  if (lastMonth) html += '</div>';
   
   cont.innerHTML = html;
 }
