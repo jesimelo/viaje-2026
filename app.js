@@ -345,7 +345,30 @@ function goToBlock(firstDay) {
 }
 
 // ============= CALENDAR =============
+let _calendarView = 'list';
+
+function switchCalendarView(view) {
+  _calendarView = view;
+  document.querySelectorAll('.view-toggle-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.view === view);
+  });
+  if (view === 'list') {
+    document.getElementById('dayList').style.display = '';
+    document.getElementById('monthGrid').style.display = 'none';
+    renderListView();
+  } else {
+    document.getElementById('dayList').style.display = 'none';
+    document.getElementById('monthGrid').style.display = '';
+    renderMonthView();
+  }
+}
+
 function renderCalendar() {
+  if (_calendarView === 'list') renderListView();
+  else renderMonthView();
+}
+
+function renderListView() {
   const today = getToday();
   const list = document.getElementById('dayList');
   const months = { '2026-05': 'Mayo', '2026-06': 'Junio' };
@@ -386,6 +409,107 @@ function renderCalendar() {
     `;
   });
   list.innerHTML = html;
+}
+
+function renderMonthView() {
+  const today = getToday();
+  const cont = document.getElementById('monthGrid');
+  const monthsLong = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+  const weekdays = ['L','M','M','J','V','S','D']; // empezamos en lunes
+  
+  // Agrupar días por mes
+  const byMonth = {};
+  const allDays = getAllDays();
+  allDays.forEach(d => {
+    const key = d.date.substring(0, 7);
+    if (!byMonth[key]) byMonth[key] = [];
+    byMonth[key].push(d);
+  });
+  
+  let html = '';
+  
+  Object.keys(byMonth).sort().forEach(monthKey => {
+    const [year, month] = monthKey.split('-').map(Number);
+    const firstDay = new Date(year, month - 1, 1);
+    const lastDay = new Date(year, month, 0).getDate();
+    
+    // Día de la semana del primero (0 = domingo, queremos lunes = 0)
+    let startDow = firstDay.getDay() - 1;
+    if (startDow < 0) startDow = 6;
+    
+    html += `<div class="month-block">
+      <div class="month-title">${monthsLong[month-1]} ${year}</div>
+      <div class="calendar-grid">`;
+    
+    // Headers de días de la semana
+    weekdays.forEach(w => {
+      html += `<div class="calendar-weekday">${w}</div>`;
+    });
+    
+    // Días vacíos al inicio
+    for (let i = 0; i < startDow; i++) {
+      html += `<div class="calendar-day empty"></div>`;
+    }
+    
+    // Días del mes
+    for (let day = 1; day <= lastDay; day++) {
+      const dateStr = `${year}-${String(month).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+      const dayData = byMonth[monthKey].find(d => d.date === dateStr);
+      
+      if (dayData) {
+        const isToday = dateStr === today;
+        const isPast = dateStr < today;
+        const blockClass = `block-${dayData.city === 'travel' ? 'llegada' : dayData.city}`;
+        const reservations = getReservationsForDate(dateStr);
+        
+        // Ícono de reserva si tiene
+        let icons = '';
+        if (reservations.length > 0) {
+          const types = [...new Set(reservations.map(r => r.type))];
+          if (types.includes('flight')) icons += '✈';
+          else if (types.includes('train')) icons += '🚂';
+          else if (types.includes('bus')) icons += '🚌';
+          else if (types.includes('hotel')) icons += '🛏';
+          else icons += '📌';
+        }
+        
+        // Nombre cortito del lugar
+        let shortPlace = dayData.place
+          .replace('Mi lugar en el mundo 🌹', 'Granada 🌹')
+          .replace(/→/g, '·')
+          .split('·')[0]
+          .trim()
+          .replace('Vuelta a Argentina', 'Vuelta')
+          .replace('Vuelo Argentina', 'Vuelo')
+          .replace('Chieti - despedida', 'Chieti')
+          .replace('Chieti - descanso', 'Chieti');
+        
+        // Truncar si muy largo
+        if (shortPlace.length > 14) shortPlace = shortPlace.substring(0, 13) + '…';
+        
+        html += `<div class="calendar-day in-trip ${blockClass} ${isToday ? 'today' : ''} ${isPast ? 'past' : ''}" onclick="openDayDetail('${dateStr}')">
+          ${icons ? `<div class="calendar-day-icons">${icons}</div>` : ''}
+          <div class="calendar-day-num">${day}</div>
+          <div class="calendar-day-place">${shortPlace}</div>
+        </div>`;
+      } else {
+        html += `<div class="calendar-day empty"></div>`;
+      }
+    }
+    
+    html += `</div></div>`;
+  });
+  
+  // Leyenda
+  html += `<div class="calendar-legend">
+    <div class="legend-item"><div class="legend-color block-chieti"></div>Chieti</div>
+    <div class="legend-item"><div class="legend-color block-andalucia"></div>Andalucía</div>
+    <div class="legend-item"><div class="legend-color block-puglia"></div>Puglia</div>
+    <div class="legend-item"><div class="legend-color block-milan"></div>Milán</div>
+    <div class="legend-item"><div class="legend-color block-llegada"></div>Vuelo</div>
+  </div>`;
+  
+  cont.innerHTML = html;
 }
 
 let _currentDayDetail = null;

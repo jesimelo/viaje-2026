@@ -1,6 +1,6 @@
 // Service Worker - Viaje 2026
 // Versión: incrementar cuando se actualice la app para forzar refresh
-const VERSION = 'v2.4.0';
+const VERSION = 'v2.5.0';
 const CACHE_NAME = 'viaje2026-' + VERSION;
 const URLS_TO_CACHE = ['./', './index.html'];
 

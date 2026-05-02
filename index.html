@@ -1026,6 +1026,147 @@ textarea, select { font-size: 16px !important; }
   color: var(--grape);
 }
 
+/* CALENDAR VIEW TOGGLE */
+.view-toggle {
+  display: flex;
+  gap: 6px;
+  background: var(--cream);
+  border: 1px solid var(--parchment-dark);
+  border-radius: 22px;
+  padding: 4px;
+  margin: 14px auto 18px;
+  width: fit-content;
+}
+.view-toggle-btn {
+  padding: 8px 18px;
+  border-radius: 18px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--grape);
+  transition: var(--t-fast);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.view-toggle-btn.active {
+  background: var(--space);
+  color: var(--parchment);
+}
+.view-toggle-btn:active { transform: scale(0.96); }
+
+/* MONTH CALENDAR GRID */
+.month-block { margin-bottom: 28px; }
+.month-title {
+  font-family: 'Fraunces', Georgia, serif;
+  font-size: 22px;
+  font-weight: 500;
+  color: var(--space);
+  text-align: center;
+  margin: 6px 0 14px;
+  letter-spacing: -0.01em;
+}
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+  background: var(--parchment-dark);
+  padding: 4px;
+  border-radius: var(--radius-md);
+}
+.calendar-weekday {
+  text-align: center;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--grape);
+  padding: 6px 2px;
+  text-transform: uppercase;
+  background: var(--cream);
+  border-radius: 6px;
+}
+.calendar-day {
+  aspect-ratio: 1;
+  background: var(--cream);
+  border-radius: 6px;
+  padding: 5px 4px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  cursor: pointer;
+  transition: var(--t-fast);
+  position: relative;
+  overflow: hidden;
+  min-height: 56px;
+}
+.calendar-day.empty { background: transparent; cursor: default; }
+.calendar-day.in-trip {
+  cursor: pointer;
+  border: 1.5px solid transparent;
+}
+.calendar-day.in-trip:active { transform: scale(0.94); }
+.calendar-day.today {
+  border-color: var(--space);
+  box-shadow: 0 0 0 2px var(--almond);
+}
+.calendar-day.past { opacity: 0.45; }
+
+.calendar-day-num {
+  font-family: 'Fraunces', Georgia, serif;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1;
+}
+.calendar-day-place {
+  font-size: 9px;
+  font-weight: 600;
+  line-height: 1.15;
+  margin-top: auto;
+  letter-spacing: 0.02em;
+  word-break: break-word;
+  hyphens: auto;
+}
+.calendar-day-icons {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  display: flex;
+  gap: 2px;
+  font-size: 9px;
+}
+
+/* Colores por bloque */
+.block-llegada { background: #e8e4dd !important; color: var(--space); }
+.block-chieti { background: #d6dde4 !important; color: var(--space); }
+.block-chieti2 { background: #d6dde4 !important; color: var(--space); }
+.block-andalucia { background: #f0d9d6 !important; color: var(--space); }
+.block-puglia { background: #e6e0d4 !important; color: var(--space); }
+.block-milan { background: #ddd9e0 !important; color: var(--space); }
+.block-vuelta { background: #e8e4dd !important; color: var(--space); }
+
+/* Legend */
+.calendar-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  justify-content: center;
+  margin-top: 12px;
+  margin-bottom: 4px;
+}
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 10px;
+  color: var(--grape);
+  font-weight: 500;
+}
+.legend-color {
+  width: 10px;
+  height: 10px;
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+
 .empty-state { text-align: center; padding: 50px 20px; color: var(--grape); }
 .empty-state-icon { font-size: 44px; margin-bottom: 14px; opacity: 0.4; }
 .empty-state-text { font-size: 13px; line-height: 1.6; }
@@ -1162,7 +1303,12 @@ textarea, select { font-size: 16px !important; }
 
 <div class="tab-content container" id="tab-calendar">
   <div class="section-title">Itinerario</div>
+  <div class="view-toggle">
+    <button class="view-toggle-btn active" data-view="list" onclick="switchCalendarView('list')">📋 Lista</button>
+    <button class="view-toggle-btn" data-view="month" onclick="switchCalendarView('month')">📅 Calendario</button>
+  </div>
   <div class="day-list" id="dayList"></div>
+  <div id="monthGrid" style="display:none;"></div>
 </div>
 
 <div class="tab-content container" id="tab-reservations">
