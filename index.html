@@ -914,6 +914,118 @@ textarea, select { font-size: 16px !important; }
 .notes-textarea-compact:focus { outline: none; border-color: var(--space); }
 .notes-textarea-compact::placeholder { color: var(--lilac); font-style: italic; }
 
+/* RESERVATIONS */
+.reservation-card {
+  background: var(--cream);
+  border: 1px solid var(--parchment-dark);
+  border-radius: var(--radius-md);
+  padding: 14px 16px;
+  margin-bottom: 8px;
+  cursor: pointer;
+  transition: var(--t-fast);
+}
+.reservation-card:hover { border-color: var(--space); transform: translateX(2px); }
+.reservation-card:active { transform: scale(0.99); }
+.reservation-card.past { opacity: 0.55; }
+
+.reservation-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+.reservation-icon {
+  font-size: 22px;
+  line-height: 1;
+  flex-shrink: 0;
+}
+.reservation-title-block {
+  flex: 1;
+  min-width: 0;
+}
+.reservation-type {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--grape);
+  font-weight: 600;
+}
+.reservation-name {
+  font-weight: 600;
+  font-size: 14px;
+  margin-top: 2px;
+}
+.reservation-date {
+  font-size: 11px;
+  color: var(--lilac);
+  font-weight: 500;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.reservation-route {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 8px 0;
+  padding: 8px 12px;
+  background: var(--parchment);
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+}
+.route-point { flex: 1; min-width: 0; }
+.route-time { font-weight: 700; font-size: 14px; color: var(--space); font-variant-numeric: tabular-nums; }
+.route-place { color: var(--grape); margin-top: 2px; }
+.route-arrow { color: var(--lilac); font-size: 18px; flex-shrink: 0; }
+
+.reservation-meta-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 8px;
+}
+.reservation-chip {
+  font-size: 11px;
+  background: var(--parchment);
+  padding: 4px 10px;
+  border-radius: 12px;
+  color: var(--space);
+  font-weight: 500;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.reservation-chip.cost { background: var(--almond); }
+.reservation-chip.code { font-family: 'Fraunces', Georgia, serif; }
+
+/* RESERVATIONS within day detail */
+.day-reservations {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.reservation-section-empty {
+  padding: 16px;
+  background: var(--parchment);
+  border: 1px dashed var(--lilac);
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  color: var(--grape);
+  text-align: center;
+  font-style: italic;
+}
+
+.month-sep-reservations {
+  font-family: 'Fraunces', Georgia, serif;
+  font-size: 18px;
+  font-weight: 500;
+  margin: 22px 0 10px;
+  color: var(--grape);
+}
+
 .empty-state { text-align: center; padding: 50px 20px; color: var(--grape); }
 .empty-state-icon { font-size: 44px; margin-bottom: 14px; opacity: 0.4; }
 .empty-state-text { font-size: 13px; line-height: 1.6; }
@@ -964,6 +1076,17 @@ textarea, select { font-size: 16px !important; }
     <h2 style="font-family:'Fraunces',serif;font-size:22px;font-weight:500;margin-bottom:6px;letter-spacing:-0.02em;">Configuración</h2>
     <p style="font-size:12px;color:var(--grape);margin-bottom:22px;">Datos, respaldo y preferencias</p>
     
+    <div class="menu-section">
+      <div class="menu-section-title">Tareas</div>
+      <div class="menu-item" onclick="closeMenu();switchTab('checklist');">
+        <div class="menu-item-icon">✓</div>
+        <div class="menu-item-info">
+          <div class="menu-item-title">Por hacer</div>
+          <div class="menu-item-desc">Lista de tareas pendientes y reservas</div>
+        </div>
+      </div>
+    </div>
+
     <div class="menu-section">
       <div class="menu-section-title">Compartir</div>
       <div class="menu-item" onclick="shareFollowing()">
@@ -1035,6 +1158,13 @@ textarea, select { font-size: 16px !important; }
   <div class="day-list" id="dayList"></div>
 </div>
 
+<div class="tab-content container" id="tab-reservations">
+  <div class="section-title">Reservas <span class="section-title-meta" id="reservationsCount"></span></div>
+  <p style="font-size:12px;color:var(--grape);margin-bottom:14px;">Vuelos, trenes, hoteles. Con horarios y vouchers.</p>
+  <button class="add-expense-btn" onclick="addReservation()">+ Nueva reserva</button>
+  <div id="reservationsList"></div>
+</div>
+
 <div class="tab-content container" id="tab-checklist">
   <div class="section-title">Por hacer</div>
   <p style="font-size:12px;color:var(--grape);margin-bottom:14px;">Marcá lo hecho. Los precios y costos se cargan en <strong>Gastos</strong>.</p>
@@ -1101,11 +1231,11 @@ textarea, select { font-size: 16px !important; }
   <button class="nav-btn" data-tab="calendar" onclick="switchTab('calendar')">
     <div class="nav-btn-icon">📅</div><div>Itinerario</div>
   </button>
+  <button class="nav-btn hide-in-following" data-tab="reservations" onclick="switchTab('reservations')">
+    <div class="nav-btn-icon">🎫</div><div>Reservas</div>
+  </button>
   <button class="nav-btn hide-in-following" data-tab="budget" onclick="switchTab('budget')">
     <div class="nav-btn-icon">💸</div><div>Gastos</div>
-  </button>
-  <button class="nav-btn hide-in-following" data-tab="checklist" onclick="switchTab('checklist')">
-    <div class="nav-btn-icon">✓</div><div>Por hacer</div>
   </button>
 </nav>
 

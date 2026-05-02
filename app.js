@@ -12,83 +12,113 @@ const TRIP = { startDate: '2026-05-18', endDate: '2026-06-22', name: 'Jesi' };
 
 // Plan base (luego puede ser sobrescrito por ediciones del usuario en state.dayOverrides)
 const DAYS_BASE = [
-  { date: '2026-05-18', day: 'Lun', city: 'travel', place: 'Vuelo Argentina → Milán', morning: 'Vuelo intercontinental.', afternoon: '', evening: 'Tip: melatonina, hidratarse, dormir lo que puedas.', sleeping: 'Avión', work: false, mapsQuery: '' },
-  { date: '2026-05-19', day: 'Mar', city: 'travel', place: 'Milán → Chieti', morning: 'Llegada Malpensa. Malpensa Express → Milán Centrale.', afternoon: 'Frecciarossa Milán → Pescara (~4h).', evening: 'Tren regional Pescara → Chieti. Llegada noche.', sleeping: 'Casa amigos Chieti', work: false, mapsQuery: 'Chieti, Italy' },
-  { date: '2026-05-20', day: 'Mié', city: 'chieti', place: 'Chieti', morning: 'Mañana libre 8-13. Café, mercado, paseo.', afternoon: 'Trabajo desde 14 (9 hs Argentina).', evening: 'Trabajo hasta las 23 (18 hs Argentina).', sleeping: 'Casa amigos', work: true, mapsQuery: 'Chieti, Italy' },
-  { date: '2026-05-21', day: 'Jue', city: 'chieti', place: 'Chieti', morning: 'Mañana libre.', afternoon: 'Trabajo 14-23.', evening: '', sleeping: 'Casa amigos', work: true, mapsQuery: '' },
-  { date: '2026-05-22', day: 'Vie', city: 'chieti', place: 'Chieti', morning: 'Mañana libre.', afternoon: 'Trabajo 14-23.', evening: '', sleeping: 'Casa amigos', work: true, mapsQuery: '' },
-  { date: '2026-05-23', day: 'Sáb', city: 'chieti', place: 'Chieti - descanso', morning: 'Aclimatación, descanso.', afternoon: 'Caminata por Chieti Alta.', evening: 'Cena con amigos.', sleeping: 'Casa amigos', work: false, mapsQuery: 'Chieti Alta' },
-  { date: '2026-05-24', day: 'Dom', city: 'chieti', place: 'Chieti - descanso', morning: 'Descanso o paseo a Pescara (15 min en tren).', afternoon: 'Lungomare, café.', evening: '', sleeping: 'Casa amigos', work: false, mapsQuery: 'Pescara lungomare' },
-  { date: '2026-05-25', day: 'Lun', city: 'chieti', place: 'Sulmona en el día', morning: 'Tren Chieti→Sulmona (1h). Plaza Garibaldi, acueducto medieval.', afternoon: 'Confetti Pelino, almuerzo pasta a la chitarra.', evening: 'Vuelta a Chieti. Trabajo 14-23.', sleeping: 'Casa amigos', work: true, mapsQuery: 'Sulmona, Italy' },
-  { date: '2026-05-26', day: 'Mar', city: 'chieti', place: 'Chieti', morning: 'Mañana libre.', afternoon: 'Trabajo 14-23.', evening: '', sleeping: 'Casa amigos', work: true, mapsQuery: '' },
-  { date: '2026-05-27', day: 'Mié', city: 'chieti', place: 'Chieti', morning: 'Mañana libre.', afternoon: 'Trabajo 14-23.', evening: '', sleeping: 'Casa amigos', work: true, mapsQuery: '' },
-  { date: '2026-05-28', day: 'Jue', city: 'chieti', place: 'Chieti', morning: 'Mañana libre.', afternoon: 'Trabajo 14-23.', evening: '', sleeping: 'Casa amigos', work: true, mapsQuery: '' },
-  { date: '2026-05-29', day: 'Vie', city: 'chieti', place: 'Chieti', morning: 'Mañana libre.', afternoon: 'Trabajo 14-23.', evening: '', sleeping: 'Casa amigos', work: true, mapsQuery: '' },
-  { date: '2026-05-30', day: 'Sáb', city: 'chieti', place: 'Scanno', morning: 'Mañana en Chieti.', afternoon: 'Tren Chieti→Sulmona + bus a Scanno.', evening: 'Caminar pueblo medieval. Cena cazuela montaña.', sleeping: 'B&B Scanno', work: false, mapsQuery: 'Scanno, Italy' },
-  { date: '2026-05-31', day: 'Dom', city: 'chieti', place: 'Scanno → Chieti', morning: 'Subida al mirador Lago di Scanno (corazón).', afternoon: 'Vuelta tarde a Chieti.', evening: '', sleeping: 'Casa amigos', work: false, mapsQuery: 'Lago di Scanno' },
-  { date: '2026-06-01', day: 'Lun', city: 'chieti', place: 'Chieti', morning: 'Mañana libre.', afternoon: 'Trabajo 14-23.', evening: '', sleeping: 'Casa amigos', work: true, mapsQuery: '' },
-  { date: '2026-06-02', day: 'Mar', city: 'chieti', place: 'Chieti', morning: 'Mañana libre.', afternoon: 'Trabajo 14-23.', evening: '', sleeping: 'Casa amigos', work: true, mapsQuery: '' },
-  { date: '2026-06-03', day: 'Mié', city: 'chieti', place: 'Chieti', morning: 'Mañana libre.', afternoon: 'Trabajo 14-23.', evening: '', sleeping: 'Casa amigos', work: true, mapsQuery: '' },
-  { date: '2026-06-04', day: 'Jue', city: 'chieti', place: 'Chieti', morning: 'Mañana libre.', afternoon: 'Trabajo 14-23.', evening: '', sleeping: 'Casa amigos', work: true, mapsQuery: '' },
-  { date: '2026-06-05', day: 'Vie', city: 'chieti', place: 'Chieti - despedida', morning: 'Mañana libre.', afternoon: 'ÚLTIMO día de trabajo. Trabajo 14-23.', evening: 'Despedida con amigos.', sleeping: 'Casa amigos', work: true, mapsQuery: '' },
-  { date: '2026-06-06', day: 'Sáb', city: 'puglia', place: 'Chieti → Bari', morning: 'Tren Chieti→Bari (3h30).', afternoon: 'Llegada Bari. Bari Vecchia, focaccia barese.', evening: 'Strada delle Orecchiette (señoras haciendo pasta).', sleeping: 'Bari', work: false, mapsQuery: 'Bari Vecchia' },
-  { date: '2026-06-07', day: 'Dom', city: 'puglia', place: 'Polignano + Monopoli', morning: 'Tren Bari→Polignano (30 min). Cala Porto, acantilados.', afternoon: 'Almuerzo de pescado. Tren a Monopoli.', evening: 'Vuelta a Bari.', sleeping: 'Bari', work: false, mapsQuery: 'Polignano a Mare' },
-  { date: '2026-06-08', day: 'Lun', city: 'puglia', place: 'Alberobello + Locorotondo', morning: 'Tren a Alberobello (1h45). Trulli.', afternoon: 'Locorotondo: pueblo blanco redondo. Almuerzo Primitivo.', evening: 'Trulli al atardecer (sin turismo). Vuelta a Bari.', sleeping: 'Bari', work: false, mapsQuery: 'Alberobello' },
-  { date: '2026-06-09', day: 'Mar', city: 'puglia', place: 'Bari → Matera', morning: 'Mañana en Bari.', afternoon: 'Bus Bari→Matera (1h15).', evening: 'Sassi iluminados, Belvedere Murgia Timone, cena en Sasso.', sleeping: 'Sasso Matera', work: false, mapsQuery: 'Sassi di Matera' },
-  { date: '2026-06-10', day: 'Mié', city: 'puglia', place: 'Matera → Lecce', morning: 'Casa Grotta, Cripta del Peccato (opcional).', afternoon: 'Bus Matera→Bari + tren Bari→Lecce.', evening: 'Lecce: Piazza SantOronzo, anfiteatro romano.', sleeping: 'Lecce', work: false, mapsQuery: 'Lecce, Italy' },
-  { date: '2026-06-11', day: 'Jue', city: 'puglia', place: 'Otranto o Gallipoli', morning: 'Tren Lecce→Otranto (1h).', afternoon: 'Playa cristalina, casco amurallado bizantino.', evening: 'Vuelta a Lecce. Cena.', sleeping: 'Lecce', work: false, mapsQuery: 'Otranto, Italy' },
-  { date: '2026-06-12', day: 'Vie', city: 'travel', place: 'Lecce → Bari → Málaga → Granada 🌹', morning: 'Tren Lecce→Bari.', afternoon: 'Vuelo Bari→Málaga.', evening: 'Tren AVANT Málaga 18:50 → Granada 20:00. Cena en mi lugar en el mundo.', sleeping: 'Granada', work: false, mapsQuery: 'Granada, Spain' },
-  { date: '2026-06-13', day: 'Sáb', city: 'granada', place: 'Mi lugar en el mundo 🌹', morning: '', afternoon: '', evening: '', sleeping: 'Granada', work: false, mapsQuery: 'Granada, Spain' },
-  { date: '2026-06-14', day: 'Dom', city: 'granada', place: 'Mi lugar en el mundo 🌹', morning: '', afternoon: '', evening: '', sleeping: 'Granada', work: false, mapsQuery: '' },
-  { date: '2026-06-15', day: 'Lun', city: 'granada', place: 'Mi lugar en el mundo 🌹', morning: '', afternoon: '', evening: '', sleeping: 'Granada', work: false, mapsQuery: '' },
-  { date: '2026-06-16', day: 'Mar', city: 'granada', place: 'Mi lugar en el mundo 🌹', morning: '', afternoon: '', evening: '', sleeping: 'Granada', work: false, mapsQuery: '' },
-  { date: '2026-06-17', day: 'Mié', city: 'malaga', place: 'Granada → Málaga', morning: 'Mañana Granada (despedida).', afternoon: 'Tren AVANT 18:50 → Málaga 20:00.', evening: 'Cena en Málaga.', sleeping: 'Málaga', work: false, mapsQuery: 'Málaga, Spain' },
-  { date: '2026-06-18', day: 'Jue', city: 'malaga', place: 'Ronda + Málaga', morning: 'Tren 8:08 Málaga→Ronda (1h45). Puente Nuevo, casco antiguo, plaza de toros.', afternoon: 'Almuerzo en Ronda. Vuelta a Málaga.', evening: 'Alcazaba, Teatro Romano. Tapas en El Pimpi.', sleeping: 'Málaga', work: false, mapsQuery: 'Ronda, Spain' },
-  { date: '2026-06-19', day: 'Vie', city: 'travel', place: 'Málaga → Milán', morning: 'Mañana Málaga relax: Gibralfaro, Mercado Atarazanas, Picasso.', afternoon: 'Tren Cercanías al aeropuerto. Vuelo 15:10.', evening: 'Llegada Milán Bergamo 17:50. Bus a Milán Centrale.', sleeping: 'Milán', work: false, mapsQuery: 'Milano, Italy' },
-  { date: '2026-06-20', day: 'Sáb', city: 'milan', place: 'Milán clásico', morning: 'Duomo + terraza, Galleria, Scala.', afternoon: 'Brera, Castello Sforzesco, Parco Sempione.', evening: 'Bosco Verticale. Aperitivo en Navigli.', sleeping: 'Milán', work: false, mapsQuery: 'Duomo di Milano' },
-  { date: '2026-06-21', day: 'Dom', city: 'milan', place: 'Bergamo en el día', morning: 'Tren a Bergamo (50 min). Bergamo Alta.', afternoon: 'Piazza Vecchia, Santa Maria Maggiore, Capilla Colleoni. Almuerzo bergamasco.', evening: 'Vuelta a Milán. Cena despedida.', sleeping: 'Milán', work: false, mapsQuery: 'Bergamo Alta' },
+  // === LLEGADA ===
+  { date: '2026-05-18', day: 'Lun', city: 'travel', place: 'Vuelo Argentina → Milán', morning: 'Vuelo.', afternoon: 'Vuelo.', evening: 'Vuelo. 💡 Tip: melatonina + hidratarte mucho.', sleeping: 'Avión', work: false, mapsQuery: '' },
+  { date: '2026-05-19', day: 'Mar', city: 'travel', place: 'Milán → Chieti', morning: 'Llegada Malpensa. Desayuno.', afternoon: 'Malpensa Express → Milán Centrale. Frecciarossa Milán → Pescara (~4h).', evening: 'Cena con amigos.', sleeping: 'Casa amigos Chieti', work: false, mapsQuery: 'Chieti, Italy' },
+
+  // === CHIETI ===
+  { date: '2026-05-20', day: 'Mié', city: 'chieti', place: 'Chieti', morning: 'Mañana libre 8-13.', afternoon: 'Trabajo.', evening: 'Trabajo.', sleeping: 'Casa amigos', work: true, mapsQuery: 'Chieti, Italy' },
+  { date: '2026-05-21', day: 'Jue', city: 'chieti', place: 'Chieti', morning: 'Mañana libre.', afternoon: 'Trabajo.', evening: 'Trabajo.', sleeping: 'Casa amigos', work: true, mapsQuery: '' },
+  { date: '2026-05-22', day: 'Vie', city: 'chieti', place: 'Chieti', morning: 'Mañana libre.', afternoon: 'Trabajo.', evening: 'Trabajo.', sleeping: 'Casa amigos', work: true, mapsQuery: '' },
+  { date: '2026-05-23', day: 'Sáb', city: 'chieti', place: 'Chieti - descanso', morning: 'Amigos.', afternoon: 'Amigos.', evening: 'Amigos. 💡 Probá los arrosticini (brochette de cordero), típico de Abruzzo.', sleeping: 'Casa amigos', work: false, mapsQuery: 'Chieti Alta' },
+  { date: '2026-05-24', day: 'Dom', city: 'chieti', place: 'Chieti - descanso', morning: 'Ir a Pescara (15 min en tren).', afternoon: 'Pescara - lungomare, café.', evening: 'Cena con amigos.', sleeping: 'Casa amigos', work: false, mapsQuery: 'Pescara lungomare' },
+  { date: '2026-05-25', day: 'Lun', city: 'chieti', place: 'Sulmona en el día', morning: 'Tren Chieti → Sulmona (1h).', afternoon: 'Sulmona: Plaza Garibaldi, acueducto medieval, Confetti Pelino. 💡 Probá pasta alla chitarra.', evening: 'Vuelta a Chieti.', sleeping: 'Casa amigos', work: true, mapsQuery: 'Sulmona, Italy' },
+  { date: '2026-05-26', day: 'Mar', city: 'chieti', place: 'Chieti', morning: 'Mañana libre.', afternoon: 'Trabajo.', evening: 'Trabajo.', sleeping: 'Casa amigos', work: true, mapsQuery: '' },
+  { date: '2026-05-27', day: 'Mié', city: 'chieti', place: 'Chieti', morning: 'Mañana libre.', afternoon: 'Trabajo.', evening: 'Trabajo.', sleeping: 'Casa amigos', work: true, mapsQuery: '' },
+  { date: '2026-05-28', day: 'Jue', city: 'chieti', place: 'Chieti', morning: 'Mañana libre.', afternoon: 'Trabajo.', evening: 'Trabajo.', sleeping: 'Casa amigos', work: true, mapsQuery: '' },
+  { date: '2026-05-29', day: 'Vie', city: 'chieti', place: 'Chieti', morning: 'Mañana libre.', afternoon: 'Trabajo.', evening: 'Trabajo.', sleeping: 'Casa amigos', work: true, mapsQuery: '' },
+  { date: '2026-05-30', day: 'Sáb', city: 'chieti', place: 'Scanno', morning: 'Tren Chieti → Sulmona + bus a Scanno.', afternoon: 'Scanno: pueblo medieval. 💡 Probá ricotta y dulces de almendra locales.', evening: 'Noche en Scanno (B&B).', sleeping: 'B&B Scanno', work: false, mapsQuery: 'Scanno, Italy' },
+  { date: '2026-05-31', day: 'Dom', city: 'chieti', place: 'Scanno → Chieti', morning: 'Subida al mirador del Lago di Scanno (forma de corazón ❤️).', afternoon: 'Vuelta tarde a Chieti.', evening: 'Cena con amigos.', sleeping: 'Casa amigos', work: false, mapsQuery: 'Lago di Scanno' },
+  { date: '2026-06-01', day: 'Lun', city: 'chieti', place: 'Chieti', morning: 'Mañana libre.', afternoon: 'Trabajo.', evening: 'Trabajo.', sleeping: 'Casa amigos', work: true, mapsQuery: '' },
+  { date: '2026-06-02', day: 'Mar', city: 'chieti', place: 'Chieti', morning: 'Mañana libre.', afternoon: 'Trabajo.', evening: 'Trabajo.', sleeping: 'Casa amigos', work: true, mapsQuery: '' },
+  { date: '2026-06-03', day: 'Mié', city: 'chieti', place: 'Chieti', morning: 'Mañana libre.', afternoon: 'Trabajo.', evening: 'Trabajo.', sleeping: 'Casa amigos', work: true, mapsQuery: '' },
+  { date: '2026-06-04', day: 'Jue', city: 'chieti', place: 'Chieti', morning: 'Mañana libre.', afternoon: 'Trabajo.', evening: 'Trabajo.', sleeping: 'Casa amigos', work: true, mapsQuery: '' },
+  { date: '2026-06-05', day: 'Vie', city: 'chieti', place: 'Chieti - despedida', morning: 'Mañana libre.', afternoon: 'ÚLTIMO día de trabajo.', evening: 'Trabajo. 💡 Tirate cena de despedida con amigos.', sleeping: 'Casa amigos', work: true, mapsQuery: '' },
+
+  // === ANDALUCÍA (ARRANCA) ===
+  { date: '2026-06-06', day: 'Sáb', city: 'malaga', place: 'Chieti → Roma → Málaga', morning: 'Bus Chieti → Roma (ProntoBus).', afternoon: 'Vuelo directo Roma → Málaga.', evening: 'Check-in Málaga centro. 🍷 Cena en El Pimpi (clásico, pedí vino dulce) o tapeo por calle Larios. 💡 También Casa Lola para tapas más auténticas.', sleeping: 'Málaga', work: false, mapsQuery: 'Málaga, Spain' },
+  { date: '2026-06-07', day: 'Dom', city: 'malaga', place: 'Málaga (día de ciudad)', morning: 'Alcazaba y Teatro Romano. Subida a Gibralfaro (mejores vistas).', afternoon: 'Museo Picasso o relax en La Malagueta. 💡 Comé un espeto de sardinas en El Tintero (chiringuito histórico).', evening: 'Atardecer en el Muelle Uno. Tapas por la zona de la Plaza de las Flores.', sleeping: 'Málaga', work: false, mapsQuery: 'Málaga centro' },
+  { date: '2026-06-08', day: 'Lun', city: 'malaga', place: 'Córdoba en el día', morning: 'Tren AVE/AVANT Málaga → Córdoba (1h). 💡 Salí temprano (7-8 hs).', afternoon: 'Mezquita-Catedral (entrada 11:30), Judería, Calleja de las Flores, Alcázar. 💡 Almuerzo en Casa Pepe de la Judería (rabo de toro o salmorejo).', evening: 'Tren 20:00 vuelta a Málaga. Dormir en Málaga.', sleeping: 'Málaga', work: false, mapsQuery: 'Mezquita-Catedral de Córdoba' },
+  { date: '2026-06-09', day: 'Mar', city: 'malaga', place: 'Ronda', morning: 'Bus Avanza o tren a Ronda (~2h).', afternoon: 'Puente Nuevo, Plaza de Toros, miradores del Tajo. 💡 Bajá por el sendero del Tajo, poca gente lo hace y es espectacular.', evening: 'Vuelta a Málaga. 💡 Si tenés energía, cena en La Cosmopolita.', sleeping: 'Málaga', work: false, mapsQuery: 'Ronda, Spain' },
+
+  // === GRANADA ===
+  { date: '2026-06-10', day: 'Mié', city: 'granada', place: 'Málaga → Granada', morning: 'Tren AVANT Málaga → Granada (1h 10m).', afternoon: 'Paseo por el Albaicín. Atardecer en el Mirador de San Nicolás (vistas a la Alhambra).', evening: 'Tapeo por el centro. 💡 En Granada cada bebida viene con tapa GRATIS - probá Bar Los Diamantes o Bodegas Castañeda.', sleeping: 'Granada', work: false, mapsQuery: 'Granada, Spain' },
+  { date: '2026-06-11', day: 'Jue', city: 'granada', place: 'Mi lugar en el mundo 🌹', morning: 'Libre. 💡 Si no fuiste, día perfecto para Alhambra (RESERVÁ con MUCHO tiempo).', afternoon: 'Libre. 💡 Tetería en el Albaicín (calle Calderería Nueva).', evening: 'Libre. 💡 Flamenco en Sacromonte (cuevas) - Cuevas Los Tarantos o Venta El Gallo.', sleeping: 'Granada', work: false, mapsQuery: 'Alhambra' },
+  { date: '2026-06-12', day: 'Vie', city: 'granada', place: 'Mi lugar en el mundo 🌹', morning: 'Libre.', afternoon: 'Libre. 💡 Paseo de los Tristes, baños árabes Hammam Al Ándalus.', evening: 'Libre.', sleeping: 'Granada', work: false, mapsQuery: '' },
+  { date: '2026-06-13', day: 'Sáb', city: 'granada', place: 'Mi lugar en el mundo 🌹', morning: 'Libre.', afternoon: 'Libre.', evening: 'Libre.', sleeping: 'Granada', work: false, mapsQuery: '' },
+
+  // === MÁLAGA → BARI ===
+  { date: '2026-06-14', day: 'Dom', city: 'travel', place: 'Granada → Málaga → Bari', morning: 'Tren Granada → Málaga.', afternoon: 'Vuelo directo Málaga → Bari (~3h).', evening: 'Check-in Bari. 🍕 Focaccia barese nocturna en Panificio Fiore (clásico).', sleeping: 'Bari', work: false, mapsQuery: 'Bari, Italy' },
+
+  // === PUGLIA ===
+  { date: '2026-06-15', day: 'Lun', city: 'puglia', place: 'Polignano + Monopoli', morning: 'Tren Bari → Polignano. 💡 Cala Porto, los acantilados son MUY fotogénicos.', afternoon: 'Tren a Monopoli. Paseo por murallas y casco antiguo.', evening: 'Vuelta a Bari. 💡 Probá orecchiette al sugo o con cime di rapa, plato típico.', sleeping: 'Bari', work: false, mapsQuery: 'Polignano a Mare' },
+  { date: '2026-06-16', day: 'Mar', city: 'puglia', place: 'Trulli → Matera', morning: 'Tren a Alberobello (1h45). Trulli (casitas cono).', afternoon: 'Locorotondo (pueblo blanco). 💡 Transfer/bus directo a Matera. 💡 Calzado con agarre - las piedras de Matera patinan aunque estén secas.', evening: '✨ Dormir en un Sasso (la noche mágica). Cena en un sasso restaurant.', sleeping: 'Sasso Matera', work: false, mapsQuery: 'Sassi di Matera' },
+  { date: '2026-06-17', day: 'Mié', city: 'puglia', place: 'Matera → Lecce', morning: 'Matera a fondo: Casa Grotta, Iglesias Rupestres, Belvedere Murgia Timone.', afternoon: 'Bus Matera → Lecce (Itabus o Flixbus, ~3h directo).', evening: '🍦 Primera noche en Lecce. Gelato en Natale (el mejor del sur).', sleeping: 'Lecce', work: false, mapsQuery: 'Lecce, Italy' },
+  { date: '2026-06-18', day: 'Jue', city: 'puglia', place: 'Lecce full day', morning: 'Tour barroco: Basílica Santa Croce, Duomo, anfiteatro romano.', afternoon: 'Compras de papel maché (artesanía de Lecce). 💡 Caffè leccese (con leche de almendra y hielo).', evening: 'Cena de despedida del sur. 💡 Probá puccia (sandwich pugliese).', sleeping: 'Lecce', work: false, mapsQuery: 'Lecce centro' },
+
+  // === VUELTA A CHIETI ===
+  { date: '2026-06-19', day: 'Vie', city: 'chieti', place: 'Lecce → Chieti', morning: 'Tren Frecciabianca/Intercity Lecce → Pescara (~4h30).', afternoon: 'Llegada a Pescara/Chieti.', evening: 'Cena con amigos.', sleeping: 'Casa amigos Chieti', work: false, mapsQuery: 'Chieti, Italy' },
+
+  // === MILÁN ===
+  { date: '2026-06-20', day: 'Sáb', city: 'milan', place: 'Chieti → Milán', morning: 'Frecciarossa Pescara → Milán Centrale (~4h15). 💡 LADO DERECHO del tren para ver el Adriático.', afternoon: 'Llegada Milán. Check-in. Galleria Vittorio Emanuele.', evening: '✨ Duomo de noche iluminado (sin la marea de gente). Cena en Brera (calles empedradas, bohemia). 💡 Probá risotto alla milanese (con azafrán) o cotoletta.', sleeping: 'Milán', work: false, mapsQuery: 'Duomo di Milano' },
+  { date: '2026-06-21', day: 'Dom', city: 'milan', place: 'Bergamo + Milán', morning: 'Tren Milán → Bergamo (50 min). Funicular a Ciudad Alta.', afternoon: 'Almuerzo en Bergamo. 💡 Probá los casoncelli (raviolones bergamascos).', evening: 'Vuelta a Milán. Aperitivo en Navigli (Spritz + buffet al atardecer). Despedida frente al Castello Sforzesco o Arco della Pace.', sleeping: 'Milán', work: false, mapsQuery: 'Bergamo Alta' },
+
+  // === VUELTA ===
   { date: '2026-06-22', day: 'Lun', city: 'travel', place: 'Vuelta a Argentina', morning: 'Malpensa Express → vuelo a casa.', afternoon: 'Llegar 3hs antes.', evening: 'Mañana 23 ya estás laburando. Bienvenida a tu vida real ✨', sleeping: 'Avión / Casa', work: false, mapsQuery: '' }
 ];
 
 const BLOCKS = [
   { id: 'llegada', icon: '✈️', title: 'Llegada', dates: '18-19 may', firstDay: '2026-05-18', weather: '' },
   { id: 'chieti', icon: '🏔️', title: 'Chieti', dates: '20 may - 5 jun', firstDay: '2026-05-20', weather: '🌤️ 18-25°C · primaveral · lluvias ocasionales' },
-  { id: 'puglia', icon: '🫒', title: 'Puglia', dates: '6-12 jun', firstDay: '2026-06-06', weather: '☀️ 25-30°C · soleado · mar caliente' },
-  { id: 'andalucia', icon: '🌹', title: 'Andalucía', dates: '12-19 jun', firstDay: '2026-06-12', weather: '🔥 28-35°C · calor seco · llevar agua' },
-  { id: 'milan', icon: '⛪', title: 'Milán', dates: '19-21 jun', firstDay: '2026-06-19', weather: '🌤️ 22-28°C · agradable · noches frescas' },
+  { id: 'andalucia', icon: '🌹', title: 'Andalucía', dates: '6-13 jun', firstDay: '2026-06-06', weather: '🔥 28-35°C · calor seco · llevar agua' },
+  { id: 'puglia', icon: '🫒', title: 'Puglia', dates: '14-18 jun', firstDay: '2026-06-14', weather: '☀️ 25-30°C · soleado · mar caliente' },
+  { id: 'chieti2', icon: '👋', title: 'Chieti (vuelta)', dates: '19 jun', firstDay: '2026-06-19', weather: '' },
+  { id: 'milan', icon: '⛪', title: 'Milán', dates: '20-21 jun', firstDay: '2026-06-20', weather: '🌤️ 22-28°C · agradable · noches frescas' },
   { id: 'vuelta', icon: '🏠', title: 'Vuelta', dates: '22 jun', firstDay: '2026-06-22', weather: '' },
 ];
 
 const CHECKLIST_ITEMS = [
-  { id: 'v1', priority: 1, text: 'Vuelo Bari → Málaga', dateUse: 'Vie 12 jun', notes: 'Ryanair. COMPRAR YA.' },
-  { id: 'v2', priority: 1, text: 'Vuelo Málaga → Milán Bergamo', dateUse: 'Vie 19 jun ~15:10', notes: 'Ryanair / EasyJet.' },
-  { id: 'v3', priority: 1, text: 'Frecciarossa Milano Centrale → Pescara', dateUse: 'Mar 19 may', notes: 'trenitalia.com - Super Economy.' },
-  { id: 'v4', priority: 1, text: 'Alojamiento Sasso en Matera (1 noche)', dateUse: 'Mar 9 jun', notes: 'Booking/Airbnb. Buscar "sasso".' },
-  { id: 'a1', priority: 2, text: 'Alojamiento Bari (3 noches)', dateUse: 'Sáb 6 al lun 8 jun', notes: 'Hostel privado o B&B en Bari Vecchia.' },
-  { id: 'a2', priority: 2, text: 'Alojamiento Lecce (2 noches)', dateUse: 'Mié 10 al jue 11 jun', notes: 'Hostel privado o B&B.' },
-  { id: 'a3', priority: 2, text: 'Alojamiento Granada (5 noches)', dateUse: 'Vie 12 al mar 16 jun', notes: 'Albaicín / Realejo / centro.' },
-  { id: 'a4', priority: 2, text: 'Alojamiento Málaga (2 noches)', dateUse: 'Mié 17 al jue 18 jun', notes: 'Centro o cerca María Zambrano.' },
-  { id: 'a5', priority: 2, text: 'Alojamiento Milán (2 noches)', dateUse: 'Vie 19 al sáb 20 jun', notes: 'Centrale, Brera, Navigli o Porta Romana.' },
-  { id: 'a6', priority: 2, text: 'La Última Cena (Da Vinci) - opcional', dateUse: 'Sáb 20 o dom 21 jun', notes: 'cenacolovinciano.org' },
-  { id: 't1', priority: 3, text: 'Tren AVANT Málaga → Granada', dateUse: 'Vie 12 jun (18:50)', notes: 'renfe.com en mayo.' },
-  { id: 't2', priority: 3, text: 'Tren AVANT Granada → Málaga', dateUse: 'Mié 17 jun (18:50)', notes: 'renfe.com en mayo.' },
-  { id: 't3', priority: 3, text: 'Tren Frecciarossa Chieti → Bari', dateUse: 'Sáb 6 jun temprano', notes: 'Comprar en mayo.' },
-  { id: 't4', priority: 3, text: 'B&B Scanno (1 noche)', dateUse: 'Sáb 30 may', notes: 'Booking. Pueblo chico.' },
-  { id: 't5', priority: 3, text: 'Cripta del Peccato Originale - opcional', dateUse: 'Mié 10 jun', notes: 'criptadelpeccatooriginale.it' },
+  // === NIVEL 1: Comprar YA ===
+  { id: 'v1', priority: 1, text: 'Bus Chieti → Roma (ProntoBus)', dateUse: 'Sáb 6 jun mañana', notes: 'prontobusitalia.it. Llegar a Roma 3h antes del vuelo.' },
+  { id: 'v2', priority: 1, text: 'Vuelo Roma → Málaga', dateUse: 'Sáb 6 jun tarde', notes: 'Ryanair / Vueling. Comprar YA.' },
+  { id: 'v3', priority: 1, text: 'Vuelo Málaga → Bari', dateUse: 'Dom 14 jun', notes: 'Vueling / Ryanair. Cuidado con horarios nocturnos.' },
+  { id: 'v4', priority: 1, text: 'Frecciarossa Pescara → Milán', dateUse: 'Sáb 20 jun', notes: 'trenitalia.com. LADO DERECHO para ver el Adriático.' },
+  { id: 'v5', priority: 1, text: 'Tren Lecce → Pescara', dateUse: 'Vie 19 jun', notes: 'Frecciabianca/Intercity. ~4h30. Comprar con tiempo.' },
+  { id: 'v6', priority: 1, text: 'Entrada Alhambra (Granada)', dateUse: 'Cuando estés en Granada', notes: '🔥 SE AGOTAN. Reservá YA en alhambra-patronato.es. Si no, tour nocturno.' },
+  { id: 'v7', priority: 1, text: 'Sasso en Matera (1 noche)', dateUse: 'Mar 16 jun', notes: 'Booking/Airbnb. Buscar "sasso" experiencia única.' },
+
+  // === NIVEL 2: 2-3 semanas ===
+  { id: 'a1', priority: 2, text: 'Alojamiento Málaga (4 noches)', dateUse: 'Sáb 6 al mar 9 jun', notes: 'Centro o cerca María Zambrano.' },
+  { id: 'a2', priority: 2, text: 'Alojamiento Granada (4 noches)', dateUse: 'Mié 10 al sáb 13 jun', notes: 'Albaicín / Realejo / centro.' },
+  { id: 'a3', priority: 2, text: 'Alojamiento Bari (2 noches)', dateUse: 'Dom 14 al lun 15 jun', notes: 'Hostel privado o B&B en Bari Vecchia.' },
+  { id: 'a4', priority: 2, text: 'Alojamiento Lecce (2 noches)', dateUse: 'Mié 17 al jue 18 jun', notes: 'Hostel privado o B&B.' },
+  { id: 'a5', priority: 2, text: 'Alojamiento Milán (2 noches)', dateUse: 'Sáb 20 al dom 21 jun', notes: 'Centrale, Brera, Navigli o Porta Romana.' },
+  { id: 'a6', priority: 2, text: 'Entrada Mezquita-Catedral Córdoba', dateUse: 'Lun 8 jun (11:30 hs)', notes: 'mezquita-catedraldecordoba.es' },
+  { id: 'a7', priority: 2, text: 'Tren AVE/AVANT Málaga → Córdoba ida y vuelta', dateUse: 'Lun 8 jun', notes: 'renfe.com. Ida temprano (7-8 hs), vuelta 20:00.' },
+  { id: 'a8', priority: 2, text: 'Tren AVANT Málaga → Granada', dateUse: 'Mié 10 jun media mañana', notes: 'renfe.com (1h 10m).' },
+
+  // === NIVEL 3: En mayo ===
+  { id: 't1', priority: 3, text: 'Bus/Tren Málaga → Ronda ida y vuelta', dateUse: 'Mar 9 jun', notes: 'Avanza suele tener mejores horarios que tren.' },
+  { id: 't2', priority: 3, text: 'Tren Granada → Málaga', dateUse: 'Dom 14 jun temprano', notes: 'Para llegar a tiempo al vuelo a Bari.' },
+  { id: 't3', priority: 3, text: 'B&B Scanno (1 noche)', dateUse: 'Sáb 30 may', notes: 'Booking. Pueblo chico.' },
+  { id: 't4', priority: 3, text: 'Transfer/Bus Locorotondo/Alberobello → Matera', dateUse: 'Mar 16 jun', notes: 'Transfer privado ~25€/persona compartido. O bus vía Bari.' },
+  { id: 't5', priority: 3, text: 'Bus Matera → Lecce', dateUse: 'Mié 17 jun', notes: 'Itabus o Flixbus. Directo, ~3h.' },
+
+  // === NIVEL 4: Allá ===
   { id: 'l1', priority: 4, text: 'Tren regional Pescara → Chieti', dateUse: 'Mar 19 may', notes: 'En la estación. 15 min.' },
-  { id: 'l2', priority: 4, text: 'Tren Chieti → Sulmona ida y vuelta', dateUse: 'Dom 25 may', notes: 'Regional.' },
+  { id: 'l2', priority: 4, text: 'Tren Chieti → Sulmona ida y vuelta', dateUse: 'Lun 25 may', notes: 'Regional.' },
   { id: 'l3', priority: 4, text: 'Tren + bus Chieti → Sulmona → Scanno', dateUse: 'Sáb 30 may', notes: 'App TUA mycicero.' },
-  { id: 'l4', priority: 4, text: 'Trenes regionales Puglia', dateUse: '7-11 jun', notes: 'Bari-Polignano, Bari-Alberobello, etc.' },
-  { id: 'l5', priority: 4, text: 'Bus Bari ↔ Matera', dateUse: '9-10 jun', notes: 'busmiccolis.com / flixbus.com' },
-  { id: 'l6', priority: 4, text: 'Tren Málaga ↔ Ronda', dateUse: 'Jue 18 jun', notes: 'Salida 8:08 hs Málaga.' },
-  { id: 'l7', priority: 4, text: 'Bus Bergamo aeropuerto → Milán', dateUse: 'Vie 19 jun llegada', notes: 'En aeropuerto, 1h.' },
-  { id: 'l8', priority: 4, text: 'Tren Milán ↔ Bergamo', dateUse: 'Dom 21 jun', notes: 'Regional, 50 min.' },
-  { id: 'l9', priority: 4, text: 'Malpensa Express → aeropuerto', dateUse: 'Lun 22 jun', notes: '50 min.' },
+  { id: 'l4', priority: 4, text: 'Trenes regionales Puglia (Polignano, Monopoli)', dateUse: '15 jun', notes: 'App Trenitalia sobre la marcha.' },
+  { id: 'l5', priority: 4, text: 'Tren Bari → Alberobello', dateUse: 'Mar 16 jun mañana', notes: 'FSE - Ferrovie Sud Est.' },
+  { id: 'l6', priority: 4, text: 'Cercanías Málaga aeropuerto', dateUse: 'Sáb 6 jun llegada', notes: 'Renfe Cercanías. Directo desde aeropuerto.' },
+  { id: 'l7', priority: 4, text: 'Malpensa Express → aeropuerto', dateUse: 'Lun 22 jun', notes: '50 min desde Centrale.' },
+
+  // === NIVEL 5: Otros (antes de viajar) ===
   { id: 'o1', priority: 5, text: 'Tarjeta Wise o Revolut', dateUse: 'Antes', notes: 'Para evitar comisiones argentinas.' },
-  { id: 'o2', priority: 5, text: 'eSIM (Holafly o Airalo)', dateUse: 'Antes', notes: '30 días con datos.' },
+  { id: 'o2', priority: 5, text: 'eSIM (Holafly o Airalo)', dateUse: 'Antes', notes: '30 días con datos para Italia + España.' },
   { id: 'o3', priority: 5, text: 'Avisar al banco fechas y países', dateUse: 'Antes', notes: 'Para que no bloqueen tarjetas.' },
   { id: 'o4', priority: 5, text: 'Foto pasaporte + scans en Drive', dateUse: 'Antes', notes: 'Compartir con persona de confianza.' },
-  { id: 'o5', priority: 5, text: 'Apps: TUA mycicero, Trenitalia, Renfe, Ryanair', dateUse: 'Antes', notes: 'Bajar todas las apps.' },
+  { id: 'o5', priority: 5, text: 'Apps: TUA mycicero, Trenitalia, Renfe, Vueling, Ryanair, Avanza', dateUse: 'Antes', notes: 'Bajar todas las apps.' },
 ];
 
 const PRIORITY_LABELS = {
@@ -128,7 +158,8 @@ let state = {
   dayOverrides: {},
   places: {},
   dayPhotos: {},
-  customTasks: []  // [{id, text, dateUse, notes, priority, custom: true}]
+  customTasks: [],
+  reservations: []  // [{id, type, name, dateStart, timeStart, placeStart, dateEnd, timeEnd, placeEnd, code, voucherUrl, cost, notes}]
 };
 
 function loadState() {
@@ -409,6 +440,28 @@ function openDayDetail(date) {
         📷 <span>Agregar foto del día</span>
       </button>
     `;
+  }
+  
+  // RESERVAS DEL DÍA (vuelos, trenes, hoteles que salen/llegan ese día)
+  const dayReservations = getReservationsForDate(date);
+  if (dayReservations.length > 0 || !FOLLOWING_MODE) {
+    html += `
+      <div class="day-section-card">
+        <div class="day-section-label">
+          <span>Reservas</span>
+          ${!FOLLOWING_MODE ? `<span class="day-section-label-edit" onclick="addReservation({dateStart:'${date}'})">+ Agregar</span>` : ''}
+        </div>
+    `;
+    if (dayReservations.length === 0) {
+      html += `<div class="reservation-section-empty">Sin reservas para este día</div>`;
+    } else {
+      html += `<div class="day-reservations">`;
+      dayReservations.forEach(r => {
+        html += renderReservationCard(r, getToday());
+      });
+      html += `</div>`;
+    }
+    html += `</div>`;
   }
   
   // EL DÍA - mañana / tarde / noche con tap directo para editar
@@ -1066,6 +1119,230 @@ function openMaps(query) {
   window.open('https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(query), '_blank');
 }
 
+// ============= RESERVATIONS =============
+const RESERVATION_TYPES = [
+  { id: 'flight', label: 'Vuelo', icon: '✈️' },
+  { id: 'train', label: 'Tren', icon: '🚂' },
+  { id: 'bus', label: 'Bus', icon: '🚌' },
+  { id: 'car', label: 'Auto', icon: '🚗' },
+  { id: 'ferry', label: 'Ferry', icon: '🛥️' },
+  { id: 'hotel', label: 'Alojamiento', icon: '🛏️' },
+  { id: 'tour', label: 'Tour / Entrada', icon: '🎫' },
+  { id: 'other', label: 'Otro', icon: '📋' },
+];
+
+function getReservationType(id) {
+  return RESERVATION_TYPES.find(t => t.id === id) || RESERVATION_TYPES[7];
+}
+
+function renderReservations() {
+  const list = document.getElementById('reservationsList');
+  const counter = document.getElementById('reservationsCount');
+  const today = getToday();
+  
+  if (!state.reservations || state.reservations.length === 0) {
+    counter.textContent = '';
+    list.innerHTML = '<div class="empty-state"><div class="empty-state-icon">🎫</div><div class="empty-state-text">Sin reservas todavía.<br>Tocá <strong>+ Nueva reserva</strong> para agregar tu primer vuelo, tren u hotel.</div></div>';
+    return;
+  }
+  
+  counter.textContent = `${state.reservations.length} ${state.reservations.length === 1 ? 'reserva' : 'reservas'}`;
+  
+  // Sort by start date+time
+  const sorted = [...state.reservations].sort((a, b) => {
+    const aKey = (a.dateStart || '9999-99-99') + (a.timeStart || '');
+    const bKey = (b.dateStart || '9999-99-99') + (b.timeStart || '');
+    return aKey.localeCompare(bKey);
+  });
+  
+  let html = '';
+  let lastMonth = '';
+  
+  sorted.forEach(r => {
+    const monthKey = (r.dateStart || '').substring(0, 7);
+    const months = { '2026-05': 'Mayo', '2026-06': 'Junio' };
+    if (monthKey && months[monthKey] && monthKey !== lastMonth) {
+      html += `<div class="month-sep-reservations">${months[monthKey]}</div>`;
+      lastMonth = monthKey;
+    }
+    
+    html += renderReservationCard(r, today);
+  });
+  
+  list.innerHTML = html;
+}
+
+function renderReservationCard(r, today) {
+  const type = getReservationType(r.type);
+  const isPast = r.dateEnd && r.dateEnd < today;
+  const isHotel = r.type === 'hotel';
+  const isTour = r.type === 'tour';
+  
+  let html = `<div class="reservation-card ${isPast ? 'past' : ''}" onclick="editReservation('${r.id}')">`;
+  
+  // Header
+  html += `<div class="reservation-header">
+    <div class="reservation-icon">${type.icon}</div>
+    <div class="reservation-title-block">
+      <div class="reservation-type">${type.label}</div>
+      <div class="reservation-name">${r.name || '(sin nombre)'}</div>
+    </div>
+    <div class="reservation-date">${r.dateStart ? formatDate(r.dateStart) : ''}</div>
+  </div>`;
+  
+  // Route
+  if (isHotel) {
+    if (r.dateStart && r.dateEnd) {
+      html += `<div class="reservation-route">
+        <div class="route-point">
+          <div class="route-time">${r.timeStart || 'check-in'}</div>
+          <div class="route-place">${formatDate(r.dateStart)} · entrada</div>
+        </div>
+        <div class="route-arrow">→</div>
+        <div class="route-point" style="text-align:right;">
+          <div class="route-time">${r.timeEnd || 'check-out'}</div>
+          <div class="route-place">${formatDate(r.dateEnd)} · salida</div>
+        </div>
+      </div>`;
+    }
+    if (r.placeStart) {
+      html += `<div style="font-size:12px;color:var(--grape);margin:6px 0;">📍 ${r.placeStart}</div>`;
+    }
+  } else if (isTour) {
+    if (r.timeStart || r.placeStart) {
+      html += `<div class="reservation-route">
+        <div class="route-point">
+          ${r.timeStart ? `<div class="route-time">${r.timeStart}</div>` : ''}
+          ${r.placeStart ? `<div class="route-place">${r.placeStart}</div>` : ''}
+        </div>
+      </div>`;
+    }
+  } else {
+    // Travel: flight, train, bus, car, ferry
+    if (r.placeStart || r.placeEnd) {
+      html += `<div class="reservation-route">
+        <div class="route-point">
+          <div class="route-time">${r.timeStart || '—'}</div>
+          <div class="route-place">${r.placeStart || ''}</div>
+        </div>
+        <div class="route-arrow">→</div>
+        <div class="route-point" style="text-align:right;">
+          <div class="route-time">${r.timeEnd || '—'}</div>
+          <div class="route-place">${r.placeEnd || ''}</div>
+        </div>
+      </div>`;
+    }
+  }
+  
+  // Chips
+  let chips = '';
+  if (r.code) chips += `<span class="reservation-chip code">#${r.code}</span>`;
+  if (r.cost) chips += `<span class="reservation-chip cost">${r.cost} EU</span>`;
+  if (r.voucherUrl) chips += `<a href="${r.voucherUrl}" target="_blank" class="reservation-chip" onclick="event.stopPropagation()">📎 voucher</a>`;
+  
+  if (chips) html += `<div class="reservation-meta-row">${chips}</div>`;
+  
+  if (r.notes) html += `<div style="font-size:11px;color:var(--grape);margin-top:8px;font-style:italic;">${r.notes}</div>`;
+  
+  html += '</div>';
+  return html;
+}
+
+function addReservation(presetData) {
+  const fields = [
+    { label: 'Tipo', name: 'type', type: 'select', options: RESERVATION_TYPES.map(t => ({ value: t.id, label: t.icon + ' ' + t.label })), value: presetData?.type || 'flight' },
+    { label: 'Nombre / descripción', name: 'name', type: 'text', value: presetData?.name || '', autofocus: true },
+    { label: 'Fecha (salida o check-in)', name: 'dateStart', type: 'date', value: presetData?.dateStart || '' },
+    { label: 'Hora salida', name: 'timeStart', type: 'time', value: presetData?.timeStart || '' },
+    { label: 'Lugar / origen', name: 'placeStart', type: 'text', value: presetData?.placeStart || '' },
+    { label: 'Fecha llegada / check-out', name: 'dateEnd', type: 'date', value: presetData?.dateEnd || '' },
+    { label: 'Hora llegada', name: 'timeEnd', type: 'time', value: presetData?.timeEnd || '' },
+    { label: 'Destino', name: 'placeEnd', type: 'text', value: presetData?.placeEnd || '' },
+    { label: 'Código de reserva', name: 'code', type: 'text', value: presetData?.code || '' },
+    { label: 'Link al voucher (Drive, Booking, etc)', name: 'voucherUrl', type: 'text', value: presetData?.voucherUrl || '' },
+    { label: 'Costo (EU)', name: 'cost', type: 'number', value: presetData?.cost || '' },
+    { label: 'Notas', name: 'notes', type: 'textarea', value: presetData?.notes || '' },
+  ];
+  
+  showEditModal({
+    title: 'Nueva reserva',
+    subtitle: 'Vuelo, tren, hotel, lo que sea',
+    fields,
+    onSave: (vals) => {
+      if (!vals.name && !vals.placeStart) return;
+      const id = 'res_' + Date.now();
+      if (!state.reservations) state.reservations = [];
+      state.reservations.push({ id, ...vals });
+      saveState();
+      renderReservations();
+      // Si está abierto un día, refrescar
+      if (_currentDayDetail) openDayDetail(_currentDayDetail);
+      showToast('Reserva agregada');
+    }
+  });
+}
+
+function editReservation(id) {
+  const r = state.reservations.find(x => x.id === id);
+  if (!r) return;
+  
+  showEditModal({
+    title: 'Editar reserva',
+    subtitle: r.name || getReservationType(r.type).label,
+    fields: [
+      { label: 'Tipo', name: 'type', type: 'select', options: RESERVATION_TYPES.map(t => ({ value: t.id, label: t.icon + ' ' + t.label })), value: r.type || 'flight' },
+      { label: 'Nombre / descripción', name: 'name', type: 'text', value: r.name || '' },
+      { label: 'Fecha (salida o check-in)', name: 'dateStart', type: 'date', value: r.dateStart || '' },
+      { label: 'Hora salida', name: 'timeStart', type: 'time', value: r.timeStart || '' },
+      { label: 'Lugar / origen', name: 'placeStart', type: 'text', value: r.placeStart || '' },
+      { label: 'Fecha llegada / check-out', name: 'dateEnd', type: 'date', value: r.dateEnd || '' },
+      { label: 'Hora llegada', name: 'timeEnd', type: 'time', value: r.timeEnd || '' },
+      { label: 'Destino', name: 'placeEnd', type: 'text', value: r.placeEnd || '' },
+      { label: 'Código de reserva', name: 'code', type: 'text', value: r.code || '' },
+      { label: 'Link al voucher', name: 'voucherUrl', type: 'text', value: r.voucherUrl || '' },
+      { label: 'Costo (EU)', name: 'cost', type: 'number', value: r.cost || '' },
+      { label: 'Notas', name: 'notes', type: 'textarea', value: r.notes || '' },
+    ],
+    onSave: (vals) => {
+      const idx = state.reservations.findIndex(x => x.id === id);
+      state.reservations[idx] = { ...r, ...vals };
+      saveState();
+      renderReservations();
+      if (_currentDayDetail) openDayDetail(_currentDayDetail);
+      showToast('Actualizada');
+    },
+    onDelete: () => {
+      const idx = state.reservations.findIndex(x => x.id === id);
+      const old = state.reservations[idx];
+      state.reservations.splice(idx, 1);
+      saveState();
+      renderReservations();
+      if (_currentDayDetail) openDayDetail(_currentDayDetail);
+      showToast('Reserva borrada', () => {
+        state.reservations.splice(idx, 0, old);
+        saveState();
+        renderReservations();
+        if (_currentDayDetail) openDayDetail(_currentDayDetail);
+      });
+    }
+  });
+}
+
+// Get reservations that touch this date (start, end, or in between for hotels)
+function getReservationsForDate(date) {
+  if (!state.reservations) return [];
+  return state.reservations.filter(r => {
+    if (r.type === 'hotel') {
+      // Hotel: incluye si la fecha está entre check-in y check-out
+      if (r.dateStart && r.dateEnd) {
+        return date >= r.dateStart && date < r.dateEnd;
+      }
+      return r.dateStart === date;
+    }
+    return r.dateStart === date || r.dateEnd === date;
+  }).sort((a, b) => (a.timeStart || '99:99').localeCompare(b.timeStart || '99:99'));
+}
+
 // ============= MENU =============
 function openMenu() { document.getElementById('menuModal').classList.add('active'); }
 function closeMenu() { document.getElementById('menuModal').classList.remove('active'); }
@@ -1175,7 +1452,8 @@ function switchTab(tab) {
   document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
   document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
   document.getElementById('tab-' + tab).classList.add('active');
-  document.querySelector('.nav-btn[data-tab="' + tab + '"]').classList.add('active');
+  const navBtn = document.querySelector('.nav-btn[data-tab="' + tab + '"]');
+  if (navBtn) navBtn.classList.add('active');
   
   const fab = document.getElementById('fab');
   if (tab === 'budget') fab.classList.remove('hidden');
@@ -1185,6 +1463,7 @@ function switchTab(tab) {
   if (tab === 'calendar') renderCalendar();
   if (tab === 'checklist') renderChecklist();
   if (tab === 'budget') renderBudget();
+  if (tab === 'reservations') renderReservations();
   
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
