@@ -1436,6 +1436,16 @@ function reloadForUpdate() {
   window.location.reload();
 }
 
+function resetItinerary() {
+  if (confirm('¿Resetear las ediciones del itinerario al plan original?\n\nNO se borran tus gastos, reservas, notas, lugares ni fotos.')) {
+    state.dayOverrides = {};
+    saveState();
+    renderToday(); renderCalendar();
+    closeMenu();
+    showToast('Itinerario reseteado al plan original');
+  }
+}
+
 function resetData() {
   if (confirm('¿Borrar gastos, notas, ediciones y lugares? El plan original queda intacto.')) {
     state = { checklist: {}, expenses: [], exchangeRate: 1100, notes: {}, dayOverrides: {}, places: {} };
